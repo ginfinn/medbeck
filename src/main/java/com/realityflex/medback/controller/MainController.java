@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Base64;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class MainController {
@@ -127,16 +127,20 @@ public class MainController {
     }
 
     @GetMapping("/getTable/{name}")
-    public List<Patient> getTable(@PathVariable(value="name") String name) {
+    public List<Patient> getTable(@PathVariable(value = "name") String name) {
         return patientRepository.findAllByDoctorName(name);
     }
 
     @GetMapping("/getAllPatients")
-    public List<Patient> getAllPatients(){
-      return patientRepository.findAll();
+    public List<Patient> getAllPatients() {
+
+        val patients = patientRepository.findAll();
+        return patients.stream().sorted(Comparator.comparing(Patient::getId)).collect(Collectors.toList());
+
     }
+
     @GetMapping("/findByInn")
-    public Patient findByInn(String inn){
+    public Patient findByInn(String inn) {
         return patientRepository.findByInn(inn);
     }
 
@@ -158,14 +162,13 @@ public class MainController {
     }
 
 
-
     @PostMapping("/getPhoto")
-   public PressureDto addPhoto( @RequestBody MultipartFile image) throws IOException {
-        PressureDto pressureDto =new PressureDto();
+    public PressureDto addPhoto(@RequestBody MultipartFile image) throws IOException {
+        PressureDto pressureDto = new PressureDto();
         pressureDto.setBottom(123);
         pressureDto.setPulse(123);
         pressureDto.setTop(123);
-       val imagee =image;
+        val imagee = image;
         return pressureDto;
     }
 
