@@ -26,6 +26,7 @@ public class HtmlController {
         return "htmlTable";
     }
 
+
     @RequestMapping(value = "/sendMsg", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
             produces = {MediaType.APPLICATION_ATOM_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public @ResponseBody
