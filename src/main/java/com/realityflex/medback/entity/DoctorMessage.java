@@ -19,6 +19,8 @@ public class DoctorMessage {
     int id;
     String title;
     String text;
+    String doctorName;
+    String phone;
     @Builder.Default
     Date date = new Date();
     @Builder.Default

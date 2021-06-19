@@ -10,6 +10,6 @@ public interface PatientRepository extends JpaRepository<Patient, Integer> {
 
     Boolean existsByLogin(String name);
 
-
+Patient findByInn(String inn);
     List<Patient> findAllByDoctorName(String name);
 }

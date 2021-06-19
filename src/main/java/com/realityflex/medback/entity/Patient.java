@@ -18,6 +18,7 @@ public class Patient {
     Integer id;
     String login;
     String password;
+    String inn;
     String fullName;
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "role_id")

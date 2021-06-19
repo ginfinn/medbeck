@@ -100,6 +100,7 @@ public class MainController {
 
         return doctorMessageRepository.findAllByFakePatientId(patient.getId());
     }
+
     @GetMapping("/patient/allPressure")
     public List<Pressure> allPressureForPatient(@RequestHeader("Authorization") String token) {
         String patientLogin = decoder(token);
@@ -108,7 +109,8 @@ public class MainController {
 
         return pressureRepository.findAllByFakePatientId(patient.getId());
     }
-    @GetMapping("/doctor/allPressure")
+
+    @PostMapping("/doctor/allPressure")
     public List<Pressure> allPressureForDoctor(@RequestHeader("Authorization") String token) {
         String patientLogin = decoder(token);
         val patient = patientRepository.findByLogin(patientLogin);
@@ -116,7 +118,50 @@ public class MainController {
 
         return pressureRepository.findAllByFakePatientId(patient.getId());
     }
-@PostMapping("/patient/addTonometer")
+
+    @GetMapping("/patient/addPressure")
+    public void addPressure(@RequestHeader("Authorization") String token, Integer top, Integer bottom, Integer pulse) {
+        String patientLogin = decoder(token);
+        Pressure pressure = new Pressure();
+        pressure.setBottom(bottom);
+        pressure.setPulse(pulse);
+        pressure.setTop(top);
+        val patient = patientRepository.findByLogin(patientLogin);
+        patient.getPressures().add(pressure);
+        patientRepository.save(patient);
+
+    }
+
+    @PostMapping("/patient/addTonometer")
+    public void addTonometer(@RequestParam String token, String model, String serialNumber) {
+        String patientLogin = decoder(token);
+        val patient = patientRepository.findByLogin(patientLogin);
+        patient.getTonometer().setModel(model);
+        patient.getTonometer().setSerialNumber(serialNumber);
+        patientRepository.save(patient);
+
+    }
+    @GetMapping("/getAllPatients")
+    public List<Patient> getAllPatients(){
+      return patientRepository.findAll();
+    }
+    @GetMapping("/findByInn")
+    public Patient findByInn(String inn){
+        return patientRepository.findByInn(inn);
+    }
+    @PostMapping("/addDoctorForPatient")
+    public void addDoctorForPatient(Integer patientId,String doctorName){
+        val patient = patientRepository.findById(patientId).get();
+        patient.setDoctorName(doctorName);
+        patientRepository.save(patient);
+    }
+    @PostMapping("/deleteDoctorForPatient")
+    public  void deleteDoctorForPatient(Integer patientId){
+        val patient = patientRepository.findById(patientId).get();
+        patient.setDoctorName("");
+        patientRepository.save(patient);
+    }
+
 
 
 //    @PostMapping("/addPhoto")
