@@ -60,7 +60,7 @@ public class HtmlController {
                 }
             }
         } else {
-            val tonometers = tonometerRepository.findAllFakePatientId(patientId);
+            val tonometers = tonometerRepository.findAllByFakePatientId(patientId);
             val pressures = pressureRepository.findAllByFakePatientId(patientId);
             for (val pressure : pressures) {
                 for (val tonometer : tonometers) {
@@ -105,8 +105,7 @@ public class HtmlController {
     @RequestMapping(value = "/sendMsg", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
             produces = {MediaType.APPLICATION_ATOM_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public @ResponseBody
-    void doctorModel(String text, Integer patientId, String phone, String doctorName) throws
-            Exception {
+    void doctorModel(String text, Integer patientId, String phone, String doctorName) {
         DoctorMessage doctorMessage = new DoctorMessage();
         doctorMessage.setText(text);
         doctorMessage.setPhone(phone);
