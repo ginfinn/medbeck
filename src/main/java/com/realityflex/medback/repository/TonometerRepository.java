@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface TonometerRepository extends JpaRepository<Tonometer, Integer> {
     List<Tonometer> findAllByDateUpdateBetweenAndFakePatientId(Date from, Date to, Integer id);
-    List<Tonometer> findAllFakePatientId( Integer id);
+    List<Tonometer> findAllByFakePatientId( Integer id);
 }
 
