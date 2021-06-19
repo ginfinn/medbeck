@@ -101,7 +101,15 @@ public class MainController {
         return doctorMessageRepository.findAllByFakePatientId(patient.getId());
     }
     @GetMapping("/patient/allPressure")
-    public List<Pressure> allPressure(@RequestHeader("Authorization") String token) {
+    public List<Pressure> allPressureForPatient(@RequestHeader("Authorization") String token) {
+        String patientLogin = decoder(token);
+        val patient = patientRepository.findByLogin(patientLogin);
+
+
+        return pressureRepository.findAllByFakePatientId(patient.getId());
+    }
+    @GetMapping("/doctor/allPressure")
+    public List<Pressure> allPressureForDoctor(@RequestHeader("Authorization") String token) {
         String patientLogin = decoder(token);
         val patient = patientRepository.findByLogin(patientLogin);
 

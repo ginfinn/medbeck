@@ -15,9 +15,10 @@ import java.util.List;
 public class Patient {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    int id;
+    Integer id;
     String login;
     String password;
+    String fullName;
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "role_id")
     Role role;

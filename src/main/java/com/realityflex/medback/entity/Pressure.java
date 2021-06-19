@@ -18,6 +18,7 @@ public class Pressure {
     private final Date id = new Date();
     int top;
     int bottom;
+    int pulse;
     String patientMessage;
     @Column(name = "patient_id")
     Integer fakePatientId;
