@@ -29,6 +29,9 @@ public class Patient {
     @JoinColumn(name = "patient_id")
     List<Pressure>  pressures;
     String doctorName;
+    @OneToOne
+    @JoinColumn(name="patient_id")
+    Tonometer tonometer;
 
 
 }

@@ -116,6 +116,7 @@ public class MainController {
 
         return pressureRepository.findAllByFakePatientId(patient.getId());
     }
+@PostMapping("/patient/addTonometer")
 
 
 //    @PostMapping("/addPhoto")

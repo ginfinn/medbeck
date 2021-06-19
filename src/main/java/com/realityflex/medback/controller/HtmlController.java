@@ -27,20 +27,23 @@ public class HtmlController {
         List<Integer> arrUp = new ArrayList<>();
         List<Integer> arrDown = new ArrayList<>();
         List<Integer> arrPulse = new ArrayList<>();
+        List<Date> dates = new ArrayList<>();
         if (to != null & from != null) {
             val sortedPressures = pressureRepository.findAllByIdBetweenAndFakePatientId(to, from, patientId);
             for (val sortedPressure : sortedPressures) {
                 arrUp.add(sortedPressure.getTop());
                 arrDown.add(sortedPressure.getBottom());
                 arrPulse.add(sortedPressure.getPulse());
+                dates.add(sortedPressure.getId());
             }
 
         } else {
             val pressures = pressureRepository.findAllByFakePatientId(patientId);
-            for (val Pressure : pressures) {
-                arrUp.add(Pressure.getTop());
-                arrDown.add(Pressure.getBottom());
-                arrPulse.add(Pressure.getPulse());
+            for (val pressure : pressures) {
+                arrUp.add(pressure.getTop());
+                arrDown.add(pressure.getBottom());
+                arrPulse.add(pressure.getPulse());
+                dates.add(pressure.getId());
             }
 
         }
@@ -48,6 +51,7 @@ public class HtmlController {
         model.addAttribute("ArrUp", arrUp);
         model.addAttribute("ArrDown", arrDown);
         model.addAttribute("ArrPulse", arrPulse);
+        model.addAttribute("Date",dates);
         return "create-project";
     }
 
