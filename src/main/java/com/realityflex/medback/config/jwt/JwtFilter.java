@@ -35,6 +35,7 @@ public class JwtFilter extends GenericFilterBean {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         logger.info("do filter...");
         String token = getTokenFromRequest((HttpServletRequest) servletRequest);
+        String token_cookie = getTokenFromCookie((HttpServletRequest) servletRequest);
         if (token != null && jwtProvider.validateToken(token)) {
             String userLogin = jwtProvider.getLoginFromToken(token);
             CustomUserDetails customUserDetails = customUserDetailsService.loadUserByUsername(userLogin);
@@ -45,7 +46,21 @@ public class JwtFilter extends GenericFilterBean {
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {
-        String bearer = request.getHeader(AUTHORIZATION);
+        String bearer = "Bearer "+request.getHeader(AUTHORIZATION);
+        if (hasText(bearer) && bearer.startsWith("Bearer ")) {
+            return bearer.substring(7);
+        }
+        return null;
+    }
+
+    private String getTokenFromCookie(HttpServletRequest request) {
+        String bearer = "Bearer "+request.getCookies();
+        for (var f:request.getCookies()) {
+            System.out.println(f.getValue());
+            System.out.println(f.getDomain());
+            System.out.println(f.getName());
+        }
+        System.out.println(bearer);
         if (hasText(bearer) && bearer.startsWith("Bearer ")) {
             return bearer.substring(7);
         }

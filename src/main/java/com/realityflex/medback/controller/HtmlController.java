@@ -30,6 +30,9 @@ import java.util.Date;
 import java.util.List;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
 @Controller
 public class HtmlController {
     @Autowired
@@ -77,10 +80,18 @@ public class HtmlController {
         return "create-project";
     }
 
-    @GetMapping("/createTable")
-    public String createTable(Model model,@RequestHeader("Authorization") String token) {
-        String doctorLogin = decoder(token);
-       model.addAttribute("patients", patientRepository.findAllByDoctorName(doctorLogin));
+    @GetMapping("/doctor/createTable")
+    public String createTable(Model model,@RequestHeader("Authorization") String token, @CookieValue(value = "Authorization") String token_cook) {
+        String doctorLogin;
+
+        System.out.println("888888888888888888 "+token_cook);
+        if (token != null) {
+            doctorLogin = decoder(token);
+        }
+        else {
+            doctorLogin = decoder(token_cook);
+        }
+        model.addAttribute("patients", patientRepository.findAllByDoctorName(doctorLogin));
         return "htmlTable";
     }
 
@@ -130,18 +141,33 @@ public class HtmlController {
     @RequestMapping(value = "/register/Doctor", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
             produces = {MediaType.APPLICATION_ATOM_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     //@PostMapping("/register/Doctor")
-    public String registerDoctor(RegistrationRequest registrationRequest,Model model) {
+    public String registerDoctor(RegistrationRequest registrationRequest, HttpServletResponse response, Model model) {
         Doctor u = new Doctor();
         u.setPassword(registrationRequest.getPassword());
         u.setLogin(registrationRequest.getLogin());
         if (doctorRepository.existsByLogin(registrationRequest.getLogin())) {
-            return "такой пользователь уже существует";
+
+            Doctor memberEntity = userService.findByLoginAndPasswordDoctor(registrationRequest.getLogin(), registrationRequest.getPassword());
+            String token = jwtProvider.generateToken(memberEntity.getLogin());
+            model.addAttribute("token", token);
+            if (!token.equals(null) || token != null) {
+                response.addHeader("Authorization", "Bearer "+token);
+                Cookie cookie = new Cookie("Authorization", "Bearer "+token);
+                response.addCookie(cookie);
+                return "redirect:/doctor/createTable";
+            }
+            else {
+                return "такой пользователь уже существует";
+            }
         } else {
             userService.saveDoctor(u);
             Doctor memberEntity = userService.findByLoginAndPasswordDoctor(registrationRequest.getLogin(), registrationRequest.getPassword());
             String token = jwtProvider.generateToken(memberEntity.getLogin());
             model.addAttribute("token", token);
-            return "htmlTable";
+            response.addHeader("Authorization", "Bearer "+token);
+            Cookie cookie = new Cookie("Authorization", "Bearer "+token);
+            response.addCookie(cookie);
+            return "redirect:/doctor/createTable";
         }
     }
 }
