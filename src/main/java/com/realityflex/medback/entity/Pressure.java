@@ -19,7 +19,7 @@ public class Pressure {
     int top;
     int bottom;
     int pulse;
-    String patientMessage;
+    String activityType;
     @Column(name = "patient_id")
     Integer fakePatientId;
 

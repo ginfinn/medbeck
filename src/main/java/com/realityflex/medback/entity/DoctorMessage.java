@@ -17,7 +17,6 @@ public class DoctorMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     int id;
-    String title;
     String text;
     String doctorName;
     String phone;

@@ -3,6 +3,7 @@ package com.realityflex.medback.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -12,8 +13,7 @@ import javax.persistence.*;
 @Entity
 public class Tonometer {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    Integer id;
+    Date dateUpdate = new Date();
     String model;
     String serialNumber;
     @Column(name = "patient_id")
