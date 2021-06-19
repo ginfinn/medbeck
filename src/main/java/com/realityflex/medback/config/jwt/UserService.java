@@ -27,23 +27,23 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
 
-    public Patient savePatient(Patient patient) {
+    public void savePatient(Patient patient) {
 
         Role userRole = roleEntityRepository.findByName("ROLE_USER");
         patient.setRole(userRole);
         patient.setPassword(passwordEncoder.encode(patient.getPassword()));
-        return patientRepository.save(patient);
+        patientRepository.save(patient);
 
 
     }
 
-    public Doctor saveDoctor(Doctor doctor) {
+    public void saveDoctor(Doctor doctor) {
 
 
         Role userRole = roleEntityRepository.findByName("ROLE_DOCTOR");
         doctor.setRole(userRole);
         doctor.setPassword(passwordEncoder.encode(doctor.getPassword()));
-        return doctorRepository.save(doctor);
+        doctorRepository.save(doctor);
 
 
     }

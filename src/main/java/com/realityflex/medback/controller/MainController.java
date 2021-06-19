@@ -121,6 +121,12 @@ public class MainController {
         patientRepository.save(patient);
 
     }
+
+    @GetMapping("/getTable/{name}")
+    public List<Patient> getTable(@PathVariable(value="name") String name) {
+        return patientRepository.findAllByDoctorName(name);
+    }
+
     @GetMapping("/getAllPatients")
     public List<Patient> getAllPatients(){
       return patientRepository.findAll();

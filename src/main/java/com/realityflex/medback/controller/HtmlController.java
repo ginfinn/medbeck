@@ -1,13 +1,12 @@
 package com.realityflex.medback.controller;
 
-import com.realityflex.medback.entity.DoctorMessage;
+import com.realityflex.medback.entity.*;
 import com.realityflex.medback.repository.PatientRepository;
 import com.realityflex.medback.repository.PressureRepository;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.realityflex.medback.config.jwt.JwtProvider;
 import com.realityflex.medback.config.jwt.UserService;
-import com.realityflex.medback.entity.Doctor;
 import com.realityflex.medback.repository.DoctorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.realityflex.medback.config.jwt.JwtProvider;
@@ -81,11 +80,17 @@ public class HtmlController {
     }
 
     @GetMapping("/doctor/createTable/{name}")
-    public String createTable(@PathVariable(value="name") String name, Model model,@RequestHeader("Authorization") String token, @CookieValue(value = "Authorization") String token_cook) {
-        String doctorLogin;
-
+    public String createTable(@PathVariable(value="name") String name, Model model) {
         model.addAttribute("patients", patientRepository.findAllByDoctorName(name));
+        System.out.println(":::: "+ patientRepository.findAllByDoctorName(name).toString());
         return "htmlTable";
+    }
+
+    @GetMapping("/doctor/showStats/{name}")
+    public String displayStats(@PathVariable(value="name") String name, Model model) {
+        val patient = patientRepository.findByLogin(name);
+        model.addAttribute("patients", pressureRepository.findAllByFakePatientId(patient.getId()));
+        return "create-project";
     }
 
     @GetMapping("/")
@@ -103,8 +108,6 @@ public class HtmlController {
         val patient = patientRepository.findById(patientId).get();
         patient.getDoctorMessages().add(doctorMessage);
         patientRepository.save(patient);
-
-
     }
     public String decoder(String token) {
         Base64.Decoder decoder = Base64.getDecoder();
@@ -148,7 +151,7 @@ public class HtmlController {
                 Cookie cookie = new Cookie("Authorization", token);
                 response.addCookie(cookie);
                 String userLogin = jwtProvider.getLoginFromToken(token);
-                return "redirect:/testApi/"+userLogin;
+                return "redirect:/doctor/createTable/"+userLogin;
             }
             else {
                 return "такой пользователь уже существует";
@@ -162,7 +165,7 @@ public class HtmlController {
             Cookie cookie = new Cookie("Authorization", token);
             response.addCookie(cookie);
             String userLogin = jwtProvider.getLoginFromToken(token);
-            return "redirect:/testApi/"+userLogin;
+            return "redirect:/doctor/createTable/"+userLogin;
         }
     }
 

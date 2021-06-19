@@ -34,7 +34,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/patient/*").hasRole("USER")
                 .antMatchers("/register/*", "/auth/*").permitAll()
                 .antMatchers("/create-project", "/sendMsg").permitAll()
-                .antMatchers("/api-docs","/testApi").permitAll()
+                .antMatchers("/api-docs","/testApi", "/getTable/*").permitAll()
                 .antMatchers("/").permitAll()
                 .and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
