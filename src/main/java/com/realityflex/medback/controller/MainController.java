@@ -2,21 +2,14 @@ package com.realityflex.medback.controller;
 
 import com.realityflex.medback.config.jwt.JwtProvider;
 import com.realityflex.medback.config.jwt.UserService;
-import com.realityflex.medback.dto.PressureDto;
 import com.realityflex.medback.entity.*;
 import com.realityflex.medback.repository.*;
 //import com.realityflex.medback.service.PhotoService;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.http.MediaType;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -41,14 +34,14 @@ public class MainController {
     public Object registerPatient(@RequestBody RegistrationRequest registrationRequest) {
         Patient u = new Patient();
         u.setPassword(registrationRequest.getPassword());
-        u.setLogin(registrationRequest.getLogin());
-        if (patientRepository.existsByLogin(registrationRequest.getLogin())) {
+        u.setSnils(registrationRequest.getLogin());
+        if (patientRepository.existsBySnils(registrationRequest.getLogin())) {
             return "такой пользователь уже существует";
         } else {
 
             userService.savePatient(u);
             Patient memberEntity = userService.findByLoginAndPasswordPatient(registrationRequest.getLogin(), registrationRequest.getPassword());
-            String token = jwtProvider.generateToken(memberEntity.getLogin());
+            String token = jwtProvider.generateToken(memberEntity.getSnils());
             return new AuthResponse(token);
         }
     }
@@ -56,14 +49,14 @@ public class MainController {
     @PostMapping("/auth/Patient")
     public AuthResponse authPatient(@RequestBody AuthRequest request) {
         Patient memberEntity = userService.findByLoginAndPasswordPatient(request.getLogin(), request.getPassword());
-        String token = jwtProvider.generateToken(memberEntity.getLogin());
+        String token = jwtProvider.generateToken(memberEntity.getSnils());
         return new AuthResponse(token);
     }
 
     @GetMapping("/patient/actualDoctorMessage")
     public List<DoctorMessage> actualDoctorMessage(@RequestHeader("Authorization") String token) {
         String patientLogin = decoder(token);
-        val patient = patientRepository.findByLogin(patientLogin);
+        val patient = patientRepository.findBySnils(patientLogin);
         val actualMessages = doctorMessageRepository.findAllByFakePatientIdAndActual(patient.getId(), true
         );
         for (val actualMessage : actualMessages) {
@@ -76,7 +69,7 @@ public class MainController {
     @GetMapping("/patient/allDoctorMessage")
     public List<DoctorMessage> allDoctorMessage(@RequestHeader("Authorization") String token) {
         String patientLogin = decoder(token);
-        val patient = patientRepository.findByLogin(patientLogin);
+        val patient = patientRepository.findBySnils(patientLogin);
 
 
         return doctorMessageRepository.findAllByFakePatientId(patient.getId());
@@ -85,7 +78,7 @@ public class MainController {
     @GetMapping("/patient/allPressure")
     public List<Pressure> allPressureForPatient(@RequestHeader("Authorization") String token) {
         String patientLogin = decoder(token);
-        val patient = patientRepository.findByLogin(patientLogin);
+        val patient = patientRepository.findBySnils(patientLogin);
 
 
         return pressureRepository.findAllByFakePatientId(patient.getId());
@@ -94,7 +87,7 @@ public class MainController {
     @PostMapping("/doctor/allPressure")
     public List<Pressure> allPressureForDoctor(@RequestHeader("Authorization") String token) {
         String patientLogin = decoder(token);
-        val patient = patientRepository.findByLogin(patientLogin);
+        val patient = patientRepository.findBySnils(patientLogin);
 
 
         return pressureRepository.findAllByFakePatientId(patient.getId());
@@ -107,19 +100,19 @@ public class MainController {
         pressure.setBottom(bottom);
         pressure.setPulse(pulse);
         pressure.setTop(top);
-        val patient = patientRepository.findByLogin(patientLogin);
+        val patient = patientRepository.findBySnils(patientLogin);
         patient.getPressures().add(pressure);
         patientRepository.save(patient);
 
     }
 
     @PostMapping("/patient/addTonometer")
-    public void addTonometer(@RequestParam String token, String model, String serialNumber) {
+    public void addTonometer(@RequestHeader("Authorization") String token, String model, String serialNumber) {
         String patientLogin = decoder(token);
         Tonometer tonometer = new Tonometer();
         tonometer.setModel(model);
         tonometer.setSerialNumber(serialNumber);
-        val patient = patientRepository.findByLogin(patientLogin);
+        val patient = patientRepository.findBySnils(patientLogin);
         patient.getTonometer().add(tonometer);
 
         patientRepository.save(patient);
@@ -140,37 +133,44 @@ public class MainController {
     }
 
     @GetMapping("/findByInn")
-    public Patient findByInn(String inn) {
-        return patientRepository.findByInn(inn);
+    public Patient findByInn(String snils) {
+        return patientRepository.findBySnils(snils);
     }
 
 
     @GetMapping("/addDoctorForPatient")
     public void addDoctorForPatient(String patientId,String doctorName){
         System.out.println("2222222 "+patientId+" "+doctorName);
-        val patient = patientRepository.findByInn(patientId);
+        val patient = patientRepository.findBySnils(patientId);
         patient.setDoctorName(doctorName);
         patientRepository.save(patient);
     }
 
     @GetMapping("/deleteDoctorForPatient")
     public  void deleteDoctorForPatient(String patientId){
-        val patient = patientRepository.findByInn(patientId);
+        val patient = patientRepository.findBySnils(patientId);
         System.out.println("3333333333 "+patientId);
         patient.setDoctorName(null);
         patientRepository.save(patient);
     }
 
 
-    @PostMapping("/getPhoto")
-    public PressureDto addPhoto(@RequestBody MultipartFile image) throws IOException {
-        PressureDto pressureDto = new PressureDto();
-        pressureDto.setBottom(123);
-        pressureDto.setPulse(123);
-        pressureDto.setTop(123);
-        val imagee = image;
-        return pressureDto;
-    }
+//    @PostMapping("/getPhoto")
+//    public PressureDto addPhoto(@RequestHeader("Authorization") String token,@RequestBody MultipartFile image) throws IOException {
+//        String patientLogin = decoder(token);
+//        Pressure pressure =new Pressure();
+//        val patient = patientRepository.findByLogin(patientLogin);
+//        patient.getPressures().add();
+//        Random random = new Random();
+//        Pressure pressure = new Pressure();
+//        pressure.setTop();
+//        PressureDto pressureDto = new PressureDto();
+//        pressureDto.setBottom(137 -  random.nextInt(20));
+//        pressureDto.setPulse(87                                                                           -  random.nextInt(20));
+//        pressureDto.setTop(150 -  random.nextInt(15));
+//        val imagee = image;
+//        return pressureDto;
+//    }
 
 
     /* @GetMapping("/photos/")

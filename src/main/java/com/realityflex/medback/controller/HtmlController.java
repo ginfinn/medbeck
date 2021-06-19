@@ -2,7 +2,6 @@ package com.realityflex.medback.controller;
 
 import com.realityflex.medback.repository.*;
 import lombok.val;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.realityflex.medback.config.jwt.JwtProvider;
 import com.realityflex.medback.config.jwt.UserService;
@@ -17,7 +16,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
@@ -91,7 +89,7 @@ public class HtmlController {
 
     @GetMapping("/doctor/showStats/{name}")
     public String displayStats(@PathVariable(value="name") String name, Model model) {
-        val patient = patientRepository.findByLogin(patientRepository.findByInn(name).getLogin());
+        val patient = patientRepository.findBySnils(patientRepository.findBySnils(name).getSnils());
         model.addAttribute("stats", pressureRepository.findAllByFakePatientId(patient.getId()));
         return "create-project";
     }

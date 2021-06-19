@@ -29,7 +29,7 @@ public class UserService {
 
     public void savePatient(Patient patient) {
 
-        Role userRole = roleEntityRepository.findByName("ROLE_USER");
+        Role userRole = roleEntityRepository.findByName("ROLE_PATIENT");
         patient.setRole(userRole);
         patient.setPassword(passwordEncoder.encode(patient.getPassword()));
         patientRepository.save(patient);
@@ -58,7 +58,7 @@ public class UserService {
     public Patient findByLoginPatient(String login) {
 
 
-        return patientRepository.findByLogin(login);
+        return patientRepository.findBySnils(login);
 
     }
 

@@ -18,7 +18,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        if(userService.findByLoginPatient(username).getLogin()!=null) {
+        if(userService.findByLoginPatient(username).getSnils()!=null) {
             val a =userService.findByLoginPatient(username);
             return  CustomUserDetails.fromUserEntityToCustomPatientDetails(a);
         }else{

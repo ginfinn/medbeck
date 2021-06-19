@@ -13,4 +13,5 @@ public class PressureDto {
     Integer top;
     Integer bottom;
     Integer pulse;
+
 }

@@ -6,10 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface PatientRepository extends JpaRepository<Patient, Integer> {
-    Patient findByLogin(String login);
+    Patient findBySnils(String snils);
 
-    Boolean existsByLogin(String name);
+    Boolean existsBySnils(String name);
 
-Patient findByInn(String inn);
+
     List<Patient> findAllByDoctorName(String name);
 }

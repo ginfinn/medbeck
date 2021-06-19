@@ -20,7 +20,7 @@ public class CustomUserDetails implements UserDetails {
     public static CustomUserDetails fromUserEntityToCustomPatientDetails(Patient patient) {
 
             CustomUserDetails c = new CustomUserDetails();
-            c.login = patient.getLogin();
+            c.login = patient.getSnils();
             c.password = patient.getPassword();
             c.grantedAuthorities = Collections.singletonList(new SimpleGrantedAuthority(patient.getRole().getName()));
             return c;

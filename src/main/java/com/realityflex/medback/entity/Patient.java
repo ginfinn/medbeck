@@ -15,9 +15,9 @@ public class Patient {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     Integer id;
-    String login;
+    String snils;
     String password;
-    String inn;
+
     String fullName;
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "role_id")
