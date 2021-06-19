@@ -8,6 +8,6 @@ import lombok.Data;
 public class RegistrationRequest {
 
     String login;
-
     String password;
+    String reg;
 }

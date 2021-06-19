@@ -56,29 +56,6 @@ public class MainController {
         return new AuthResponse(token);
     }
 
-    @PostMapping("/register/doctor")
-    public Object registerDoctor(@RequestBody RegistrationRequest registrationRequest) {
-        Doctor u = new Doctor();
-        u.setPassword(registrationRequest.getPassword());
-        u.setLogin(registrationRequest.getLogin());
-        if (doctorRepository.existsByLogin(registrationRequest.getLogin())) {
-            return "такой пользователь уже существует";
-        } else {
-
-            userService.saveDoctor(u);
-            Doctor memberEntity = userService.findByLoginAndPasswordDoctor(registrationRequest.getLogin(), registrationRequest.getPassword());
-            String token = jwtProvider.generateToken(memberEntity.getLogin());
-            return new AuthResponse(token);
-        }
-    }
-
-    @PostMapping("/auth/Doctor")
-    public AuthResponse authDoctor(@RequestBody AuthRequest request) {
-        Doctor memberEntity = userService.findByLoginAndPasswordDoctor(request.getLogin(), request.getPassword());
-        String token = jwtProvider.generateToken(memberEntity.getLogin());
-        return new AuthResponse(token);
-    }
-
     @GetMapping("/patient/actualDoctorMessage")
     public List<DoctorMessage> actualDoctorMessage(@RequestHeader("Authorization") String token) {
         String patientLogin = decoder(token);
