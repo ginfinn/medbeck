@@ -80,18 +80,11 @@ public class HtmlController {
         return "create-project";
     }
 
-    @GetMapping("/doctor/createTable")
-    public String createTable(Model model,@RequestHeader("Authorization") String token, @CookieValue(value = "Authorization") String token_cook) {
+    @GetMapping("/doctor/createTable/{name}")
+    public String createTable(@PathVariable(value="name") String name, Model model,@RequestHeader("Authorization") String token, @CookieValue(value = "Authorization") String token_cook) {
         String doctorLogin;
 
-        System.out.println("888888888888888888 "+token_cook);
-        if (token != null) {
-            doctorLogin = decoder(token);
-        }
-        else {
-            doctorLogin = decoder(token_cook);
-        }
-        model.addAttribute("patients", patientRepository.findAllByDoctorName(doctorLogin));
+        model.addAttribute("patients", patientRepository.findAllByDoctorName(name));
         return "htmlTable";
     }
 
@@ -152,9 +145,10 @@ public class HtmlController {
             model.addAttribute("token", token);
             if (!token.equals(null) || token != null) {
                 response.addHeader("Authorization", "Bearer "+token);
-                Cookie cookie = new Cookie("Authorization", "Bearer "+token);
+                Cookie cookie = new Cookie("Authorization", token);
                 response.addCookie(cookie);
-                return "redirect:/doctor/createTable";
+                String userLogin = jwtProvider.getLoginFromToken(token);
+                return "redirect:/testApi/"+userLogin;
             }
             else {
                 return "такой пользователь уже существует";
@@ -165,9 +159,15 @@ public class HtmlController {
             String token = jwtProvider.generateToken(memberEntity.getLogin());
             model.addAttribute("token", token);
             response.addHeader("Authorization", "Bearer "+token);
-            Cookie cookie = new Cookie("Authorization", "Bearer "+token);
+            Cookie cookie = new Cookie("Authorization", token);
             response.addCookie(cookie);
-            return "redirect:/doctor/createTable";
+            String userLogin = jwtProvider.getLoginFromToken(token);
+            return "redirect:/testApi/"+userLogin;
         }
+    }
+
+    @GetMapping("/testApi/{name}")
+    public @ResponseBody String getAttr(@PathVariable(value="name") String name){
+        return name;
     }
 }

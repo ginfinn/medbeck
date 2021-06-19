@@ -14,8 +14,10 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Arrays;
 
 import static org.springframework.util.StringUtils.hasText;
 
@@ -35,7 +37,6 @@ public class JwtFilter extends GenericFilterBean {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         logger.info("do filter...");
         String token = getTokenFromRequest((HttpServletRequest) servletRequest);
-        String token_cookie = getTokenFromCookie((HttpServletRequest) servletRequest);
         if (token != null && jwtProvider.validateToken(token)) {
             String userLogin = jwtProvider.getLoginFromToken(token);
             CustomUserDetails customUserDetails = customUserDetailsService.loadUserByUsername(userLogin);
@@ -46,7 +47,7 @@ public class JwtFilter extends GenericFilterBean {
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {
-        String bearer = "Bearer "+request.getHeader(AUTHORIZATION);
+        String bearer = request.getHeader(AUTHORIZATION);
         if (hasText(bearer) && bearer.startsWith("Bearer ")) {
             return bearer.substring(7);
         }
@@ -54,15 +55,19 @@ public class JwtFilter extends GenericFilterBean {
     }
 
     private String getTokenFromCookie(HttpServletRequest request) {
-        String bearer = "Bearer "+request.getCookies();
-        for (var f:request.getCookies()) {
-            System.out.println(f.getValue());
-            System.out.println(f.getDomain());
-            System.out.println(f.getName());
-        }
-        System.out.println(bearer);
-        if (hasText(bearer) && bearer.startsWith("Bearer ")) {
-            return bearer.substring(7);
+        String bearer = "Noo";
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("Authorization".equals(cookie.getName())) {
+                    bearer = cookie.getValue();
+                    System.out.println("EEEE "+bearer);
+                    return bearer;
+                }
+            }
+            System.out.println(bearer);
+            if (hasText(bearer) && bearer.startsWith("Bearer ")) {
+                return bearer.substring(7);
+            }
         }
         return null;
     }
