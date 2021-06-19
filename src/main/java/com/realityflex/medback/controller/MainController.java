@@ -2,6 +2,7 @@ package com.realityflex.medback.controller;
 
 import com.realityflex.medback.config.jwt.JwtProvider;
 import com.realityflex.medback.config.jwt.UserService;
+import com.realityflex.medback.dto.PressureDto;
 import com.realityflex.medback.entity.*;
 import com.realityflex.medback.repository.*;
 //import com.realityflex.medback.service.PhotoService;
@@ -12,7 +13,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
 
@@ -150,12 +153,15 @@ public class MainController {
 
 
 
-//    @PostMapping("/addPhoto")
-//    public String addPhoto(String title, @RequestParam("file") MultipartFile image, Model model) throws IOException {
-//
-//        String id = photoService.addPhoto(title, image);
-//        return "redirect:/photos/" + id;
-//    }
+    @PostMapping("/getPhoto")
+   public PressureDto addPhoto( @RequestBody MultipartFile image) throws IOException {
+        PressureDto pressureDto =new PressureDto();
+        pressureDto.setBottom(123);
+        pressureDto.setPulse(123);
+        pressureDto.setTop(123);
+       val imagee =image;
+        return pressureDto;
+    }
 
 
     /* @GetMapping("/photos/")
