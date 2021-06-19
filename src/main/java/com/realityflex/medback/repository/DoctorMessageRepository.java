@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface DoctorMessageRepository extends JpaRepository<DoctorMessage, String> {
+public interface DoctorMessageRepository extends JpaRepository<DoctorMessage, Integer> {
 List<DoctorMessage> findAllByFakePatientIdAndActual(Integer id, Boolean actual);
     List<DoctorMessage> findAllByFakePatientId(Integer id);
 }
