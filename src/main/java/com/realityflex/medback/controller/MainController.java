@@ -135,9 +135,12 @@ public class MainController {
     @PostMapping("/patient/addTonometer")
     public void addTonometer(@RequestParam String token, String model, String serialNumber) {
         String patientLogin = decoder(token);
+        Tonometer tonometer = new Tonometer();
+        tonometer.setModel(model);
+        tonometer.setSerialNumber(serialNumber);
         val patient = patientRepository.findByLogin(patientLogin);
-        patient.getTonometer().setModel(model);
-        patient.getTonometer().setSerialNumber(serialNumber);
+        patient.getTonometer().add(tonometer);
+
         patientRepository.save(patient);
 
     }

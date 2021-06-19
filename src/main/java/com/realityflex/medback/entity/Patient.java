@@ -30,9 +30,9 @@ public class Patient {
     @JoinColumn(name = "patient_id")
     List<Pressure>  pressures;
     String doctorName;
-    @OneToOne
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name="patient_id")
-    Tonometer tonometer;
+    List<Tonometer> tonometer;
 
 
 }
