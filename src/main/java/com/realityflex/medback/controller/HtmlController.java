@@ -97,7 +97,7 @@ public class HtmlController {
     @RequestMapping(value = "/sendMsg", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
             produces = {MediaType.APPLICATION_ATOM_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public @ResponseBody
-    void doctorModel(String text, Integer patientId) throws Exception {
+    void doctorModel(String text, Integer patientId,String title ,String phone,String doctorName) throws Exception {
         DoctorMessage doctorMessage = new DoctorMessage();
         doctorMessage.setText(text);
         val patient = patientRepository.findById(patientId).get();
