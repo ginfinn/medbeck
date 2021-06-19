@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.MediaType;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -138,16 +139,21 @@ public class MainController {
     public Patient findByInn(String inn){
         return patientRepository.findByInn(inn);
     }
-    @PostMapping("/addDoctorForPatient")
-    public void addDoctorForPatient(Integer patientId,String doctorName){
-        val patient = patientRepository.findById(patientId).get();
+
+
+    @GetMapping("/addDoctorForPatient")
+    public void addDoctorForPatient(String patientId,String doctorName){
+        System.out.println("2222222 "+patientId+" "+doctorName);
+        val patient = patientRepository.findByInn(patientId);
         patient.setDoctorName(doctorName);
         patientRepository.save(patient);
     }
-    @PostMapping("/deleteDoctorForPatient")
-    public  void deleteDoctorForPatient(Integer patientId){
-        val patient = patientRepository.findById(patientId).get();
-        patient.setDoctorName("");
+
+    @GetMapping("/deleteDoctorForPatient")
+    public  void deleteDoctorForPatient(String patientId){
+        val patient = patientRepository.findByInn(patientId);
+        System.out.println("3333333333 "+patientId);
+        patient.setDoctorName(null);
         patientRepository.save(patient);
     }
 
@@ -171,7 +177,8 @@ public class MainController {
         // byte[] image = photoService.getPhoto(id);
         // return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(image);
      //}
-    // @PostMapping("/addMessage")*/
+
+     */
     public String decoder(String token) {
         Base64.Decoder decoder = Base64.getDecoder();
         String[] chunks;

@@ -80,22 +80,100 @@
         }
     </style>
 
-    <script type="text/javascript">
-
-        $("table tr").click(function() {
-            alert($(this).children("td").html());
-        });
-
-    </script>
-
     <script th:inline="javascript">
         /*<![CDATA[*/
 
         bool = true;
 
-        function isClick(){
+        function onClickk() {
+            console.log($(this).children('td')[1].innerHTML+" FFFFFFFFFFFFF")
+            if(bool) {
+                console.log($(this).children('td')[1].innerHTML)
+                document.location.href = "http://localhost:8080/doctor/showStats/"+$(this).children('td')[1].innerHTML;
+                // xhr.open('GET', '/getAllPatients', false);
+                // xhr.send();
+            }
+            else {
+                console.log($(this).children('td')[1].innerHTML)
+                console.log($(this).children('td')[2].innerHTML !== "null")
+                if ($(this).children('td')[2].innerHTML === "Doctor") {
+                    var xhr = new XMLHttpRequest();
+                    var theUrl = "/deleteDoctorForPatient";
+                    xhr.open('GET', theUrl+"?patientId="+$(this).children('td')[1].innerHTML, false);
+                    xhr.send();
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET', '/getAllPatients', false);
+                    xhr.send();
+                    if (xhr.status != 200) {
+                        alert(xhr.status + ': ' + xhr.statusText);
+                    } else {
+                        console.log(xhr.responseText);
+                        patients = JSON.parse(xhr.responseText);
+                        console.log(patients);
+                        tableArr = [];
+                        var myTable = document.getElementById("table");
+                        var rowCount = myTable.rows.length;
+                        for (var x = rowCount - 1; x > 0; x--) {
+                            myTable.deleteRow(x);
+                        }
 
+                        for (index = 0; index < patients.length; ++index) {
+                            tableArr.push('<tr>')
+                            tableArr.push('<td>' + patients[index].fullName + '</td>');
+                            tableArr.push('<td>' + patients[index].inn + '</td>');
+                            tableArr.push('<td>' + patients[index].doctorName + '</td>');
+                            tableArr.push('</tr>');
+                        }
+
+                        myTable.innerHTML += tableArr.join('\n')
+
+                    }
+                    $(function(){
+                        $('table tr').click(onClickk)
+                    });
+                }
+                else{
+                    var xhr = new XMLHttpRequest();
+                    var theUrl = "/addDoctorForPatient";
+                    xhr.open('GET', theUrl+"?patientId="+$(this).children('td')[1].innerHTML+"&doctorName="+document.location.pathname.split('/')[document.location.pathname.split('/').length-1], false);
+                    xhr.send();
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET', '/getAllPatients', false);
+                    xhr.send();
+                    if (xhr.status != 200) {
+                        alert(xhr.status + ': ' + xhr.statusText);
+                    } else {
+                        console.log(xhr.responseText);
+                        patients = JSON.parse(xhr.responseText);
+                        console.log(patients);
+                        tableArr = [];
+                        var myTable = document.getElementById("table");
+                        var rowCount = myTable.rows.length;
+                        for (var x = rowCount - 1; x > 0; x--) {
+                            myTable.deleteRow(x);
+                        }
+
+                        for (index = 0; index < patients.length; ++index) {
+                            tableArr.push('<tr>')
+                            tableArr.push('<td>' + patients[index].fullName + '</td>');
+                            tableArr.push('<td>' + patients[index].inn + '</td>');
+                            tableArr.push('<td>' + patients[index].doctorName + '</td>');
+                            tableArr.push('</tr>');
+                        }
+
+                        myTable.innerHTML += tableArr.join('\n')
+
+                    }
+                    $(function(){
+                        $('table tr').click(onClickk)
+                    });
+                }
+            }
         }
+
+        $(function(){
+            $('table tr').click(onClickk)
+        });
 
         function isEmail() {
 
@@ -128,6 +206,9 @@
 
                 }
                 bool = false
+                $(function(){
+                    $('table tr').click(onClickk)
+                });
             }
             else{
                 var xhr = new XMLHttpRequest();
@@ -158,11 +239,14 @@
 
                 }
                 console.log(document.location.pathname.split('/')[document.location.pathname.split('/').length-1]);
-                bool = false
+                bool = true
+                $(function(){
+                    $('table tr').click(onClickk)
+                });
             }
         }
 
-        function alert(){
+        function aler(){
             let token = /*[[${token}]]*/ null;
             if (token != null) {
                 window.sessionStorage.authToken = token;
@@ -173,7 +257,7 @@
     </script>
 
 </head>
-<body onload="alert()">
+<body onload="aler()">
 
 <p id="stat">Test Table</p>
 
@@ -203,7 +287,7 @@
 </script>
 
 <p><input type="button" value="Проверить" onclick="isEmail()"></p>
-<a href="/doctor/showStats/qwrasfa">
+<a href="/doctor/showStats/lecar">
     <input type="button" value="Статистика">
 </a>
 

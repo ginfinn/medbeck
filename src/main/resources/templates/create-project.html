@@ -35,9 +35,21 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
 
-    let ArrUp = /*[[${ArrUp}]]*/ [0];
-    let ArrDown = /*[[${ArrDown}]]*/ [0];
-    let ArrPulse = /*[[${ArrPulse}]]*/ [0];
+    let stats = /*[[${stats}]]*/ null;
+
+    let ArrUp = [];
+    let ArrDown = [];
+    let ArrPulse = [];
+    let ArrDate = [];
+
+    for (index = 0; index < stats.length; ++index) {
+        ArrUp.push(stats[index].top);
+        ArrDown.push(stats[index].bottom)
+        ArrPulse.push(stats[index].pulse)
+        time = new Date(stats[index].id);
+        ArrDate.push(time)
+        console.log(new Date(stats[index].id))
+    }
 
     Highcharts.chart('container', {
         title: {
@@ -53,6 +65,9 @@
                 text: 'Number of Employees'
             }
         },
+        xAxis: {
+            "categories": ArrDate,
+        },
         legend: {
             layout: 'vertical',
             align: 'right',
@@ -61,7 +76,7 @@
 
         plotOptions: {
             series: {
-                pointStart: 2010
+
             }
         },
 
@@ -74,13 +89,20 @@
         }, {
             name: 'Sales & Distribution',
             data: ArrPulse
+        },{
+
         }]
 
     });
 
-
     /*]]>*/
 </script>
+
+<form action="/sendMsg" method="post">
+    <input type="text" value= size="19" onClick="xCal(this)" onKeyUp="xCal()">
+    <input type="text" value="06.10.2017 20:12:45" size="19" onClick="xCal(this)" onKeyUp="xCal()">
+    <p><input type="submit"></p>
+</form>
 
 <form action="/sendMsg" method="post">
     <p><input type="text" name="text"> firstName</p>

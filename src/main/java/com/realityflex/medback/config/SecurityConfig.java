@@ -35,6 +35,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/register/*", "/auth/*").permitAll()
                 .antMatchers("/create-project", "/sendMsg").permitAll()
                 .antMatchers("/api-docs","/testApi", "/getTable/*").permitAll()
+                .antMatchers("/deleteDoctorForPatient","/addDoctorForPatient").permitAll()
                 .antMatchers("/").permitAll()
                 .and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

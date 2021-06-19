@@ -88,8 +88,8 @@ public class HtmlController {
 
     @GetMapping("/doctor/showStats/{name}")
     public String displayStats(@PathVariable(value="name") String name, Model model) {
-        val patient = patientRepository.findByLogin(name);
-        model.addAttribute("patients", pressureRepository.findAllByFakePatientId(patient.getId()));
+        val patient = patientRepository.findByLogin(patientRepository.findByInn(name).getLogin());
+        model.addAttribute("stats", pressureRepository.findAllByFakePatientId(patient.getId()));
         return "create-project";
     }
 
@@ -168,6 +168,7 @@ public class HtmlController {
             return "redirect:/doctor/createTable/"+userLogin;
         }
     }
+
 
     @GetMapping("/testApi/{name}")
     public @ResponseBody String getAttr(@PathVariable(value="name") String name){
