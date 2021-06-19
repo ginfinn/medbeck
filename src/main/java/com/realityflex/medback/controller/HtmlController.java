@@ -1,13 +1,8 @@
 package com.realityflex.medback.controller;
 
-import com.realityflex.medback.entity.*;
-import com.realityflex.medback.repository.PatientRepository;
-import com.realityflex.medback.repository.PressureRepository;
+import com.realityflex.medback.repository.*;
 import lombok.val;
-import org.springframework.beans.factory.annotation.Autowired;
-import com.realityflex.medback.config.jwt.JwtProvider;
-import com.realityflex.medback.config.jwt.UserService;
-import com.realityflex.medback.repository.DoctorRepository;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.realityflex.medback.config.jwt.JwtProvider;
 import com.realityflex.medback.config.jwt.UserService;
@@ -16,8 +11,6 @@ import com.realityflex.medback.entity.DoctorMessage;
 import com.realityflex.medback.repository.DoctorRepository;
 import com.realityflex.medback.repository.PatientRepository;
 import com.realityflex.medback.repository.PressureRepository;
-import lombok.val;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
-import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -38,6 +30,8 @@ public class HtmlController {
     PressureRepository pressureRepository;
     @Autowired
     PatientRepository patientRepository;
+    @Autowired
+    TonometerRepository tonometerRepository;
 
     @Autowired
     DoctorRepository doctorRepository;
@@ -52,42 +46,51 @@ public class HtmlController {
         List<Integer> arrDown = new ArrayList<>();
         List<Integer> arrPulse = new ArrayList<>();
         List<Date> dates = new ArrayList<>();
+        List<Date> tonometerUpdate = new ArrayList<>();
         if (to != null & from != null) {
+            val sortedTonometers = tonometerRepository.findAllByDateUpdateBetweenAndFakePatientId(to, from, patientId);
             val sortedPressures = pressureRepository.findAllByIdBetweenAndFakePatientId(to, from, patientId);
             for (val sortedPressure : sortedPressures) {
-                arrUp.add(sortedPressure.getTop());
-                arrDown.add(sortedPressure.getBottom());
-                arrPulse.add(sortedPressure.getPulse());
-                dates.add(sortedPressure.getId());
+                for (val sortedTonometer : sortedTonometers) {
+                    arrUp.add(sortedPressure.getTop());
+                    arrDown.add(sortedPressure.getBottom());
+                    arrPulse.add(sortedPressure.getPulse());
+                    dates.add(sortedPressure.getId());
+                    tonometerUpdate.add(sortedTonometer.getDateUpdate());
+                }
             }
-
         } else {
+            val tonometers = tonometerRepository.findAllFakePatientId(patientId);
             val pressures = pressureRepository.findAllByFakePatientId(patientId);
             for (val pressure : pressures) {
-                arrUp.add(pressure.getTop());
-                arrDown.add(pressure.getBottom());
-                arrPulse.add(pressure.getPulse());
-                dates.add(pressure.getId());
-            }
+                for (val tonometer : tonometers) {
+                    arrUp.add(pressure.getTop());
+                    arrDown.add(pressure.getBottom());
+                    arrPulse.add(pressure.getPulse());
+                    dates.add(pressure.getId());
+                    tonometerUpdate.add(tonometer.getDateUpdate());
+                }
 
+            }
         }
 
         model.addAttribute("ArrUp", arrUp);
         model.addAttribute("ArrDown", arrDown);
         model.addAttribute("ArrPulse", arrPulse);
-        model.addAttribute("Date",dates);
+        model.addAttribute("Date", dates);
+        model.addAttribute("DateUpdateTonometers", tonometerUpdate);
         return "create-project";
     }
 
     @GetMapping("/doctor/createTable/{name}")
-    public String createTable(@PathVariable(value="name") String name, Model model) {
+    public String createTable(@PathVariable(value = "name") String name, Model model) {
         model.addAttribute("patients", patientRepository.findAllByDoctorName(name));
-        System.out.println(":::: "+ patientRepository.findAllByDoctorName(name).toString());
+        System.out.println(":::: " + patientRepository.findAllByDoctorName(name).toString());
         return "htmlTable";
     }
 
     @GetMapping("/doctor/showStats/{name}")
-    public String displayStats(@PathVariable(value="name") String name, Model model) {
+    public String displayStats(@PathVariable(value = "name") String name, Model model) {
         val patient = patientRepository.findByLogin(name);
         model.addAttribute("patients", pressureRepository.findAllByFakePatientId(patient.getId()));
         return "create-project";
@@ -102,31 +105,21 @@ public class HtmlController {
     @RequestMapping(value = "/sendMsg", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
             produces = {MediaType.APPLICATION_ATOM_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public @ResponseBody
-    void doctorModel(String text, Integer patientId,String title ,String phone,String doctorName) throws Exception {
+    void doctorModel(String text, Integer patientId, String phone, String doctorName) throws
+            Exception {
         DoctorMessage doctorMessage = new DoctorMessage();
         doctorMessage.setText(text);
+        doctorMessage.setPhone(phone);
+        doctorMessage.setDoctorName(doctorName);
         val patient = patientRepository.findById(patientId).get();
         patient.getDoctorMessages().add(doctorMessage);
         patientRepository.save(patient);
     }
-    public String decoder(String token) {
-        Base64.Decoder decoder = Base64.getDecoder();
-        String[] chunks;
-        chunks = token.split("Bearer ");
-        String a = chunks[1];
-        String[] chunks2 = a.split("\\.");
-        String[] v;
-        String payload = new String(decoder.decode(chunks2[1]));
-        String[] c = payload.split(":");
-        v = c[1].split(",");
-        String memberName = v[0];
-        memberName = memberName.replace("\"", "");
-        return memberName;
 
-    }
+
 
     @PostMapping("/auth/Doctor")
-    public String authDoctor(@RequestBody AuthRequest request,Model model) {
+    public String authDoctor(@RequestBody AuthRequest request, Model model) {
         Doctor memberEntity = userService.findByLoginAndPasswordDoctor(request.getLogin(), request.getPassword());
         String token = jwtProvider.generateToken(memberEntity.getLogin());
         model.addAttribute("token", token);
@@ -146,14 +139,13 @@ public class HtmlController {
             Doctor memberEntity = userService.findByLoginAndPasswordDoctor(registrationRequest.getLogin(), registrationRequest.getPassword());
             String token = jwtProvider.generateToken(memberEntity.getLogin());
             model.addAttribute("token", token);
-            if (!token.equals(null) || token != null) {
-                response.addHeader("Authorization", "Bearer "+token);
+            if ( token != null) {
+                response.addHeader("Authorization", "Bearer " + token);
                 Cookie cookie = new Cookie("Authorization", token);
                 response.addCookie(cookie);
                 String userLogin = jwtProvider.getLoginFromToken(token);
-                return "redirect:/doctor/createTable/"+userLogin;
-            }
-            else {
+                return "redirect:/doctor/createTable/" + userLogin;
+            } else {
                 return "такой пользователь уже существует";
             }
         } else {
@@ -161,16 +153,18 @@ public class HtmlController {
             Doctor memberEntity = userService.findByLoginAndPasswordDoctor(registrationRequest.getLogin(), registrationRequest.getPassword());
             String token = jwtProvider.generateToken(memberEntity.getLogin());
             model.addAttribute("token", token);
-            response.addHeader("Authorization", "Bearer "+token);
+            response.addHeader("Authorization", "Bearer " + token);
             Cookie cookie = new Cookie("Authorization", token);
             response.addCookie(cookie);
             String userLogin = jwtProvider.getLoginFromToken(token);
-            return "redirect:/doctor/createTable/"+userLogin;
+            return "redirect:/doctor/createTable/" + userLogin;
         }
     }
 
     @GetMapping("/testApi/{name}")
-    public @ResponseBody String getAttr(@PathVariable(value="name") String name){
+    public @ResponseBody
+    String getAttr(@PathVariable(value = "name") String name) {
         return name;
     }
+
 }
