@@ -1,0 +1,102 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Spring Boot Thymeleaf Hello World Example</title>
+
+    <link rel="stylesheet" th:href="@{webjars/bootstrap/4.2.1/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <style type="text/css">
+        #container {
+            min-width: 310px;
+            max-width: 800px;
+            height: 400px;
+            margin: 0 auto
+        }
+
+        .container {
+            min-width: 310px;
+            max-width: 800px;
+            height: 400px;
+            margin: 0 auto;
+            text-align:center;
+        }
+    </style>
+</head>
+<body>
+
+<div id="container" class="chart_wrap"></div>
+
+<div class="container">
+    <a href="https://kisameev.ru/demo/highcharts/chart/chart.html">demo 1</a>
+    <a href="https://kisameev.ru/demo/highcharts/chart/basicline.html">demo 2</a>
+    <a href="https://kisameev.ru/demo/highcharts/chart/area.html">demo 3</a>
+    <a href="https://kisameev.ru/demo/highcharts/chart/column.html">demo 4</a>
+    <a href="https://kisameev.ru/demo/highcharts/chart/piechart.html">demo 5</a>
+    <a href="https://kisameev.ru/demo/highcharts/chart/3d.html">demo 6</a>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
+    let ArrUp = /*[[${ArrUp}]]*/ [0];
+    let ArrDown = /*[[${ArrDown}]]*/ [0];
+    let ArrPulse = /*[[${ArrPulse}]]*/ [0];
+
+    Highcharts.chart('container', {
+        title: {
+            text: 'Solar Employment Growth by Sector, 2010-2016'
+        },
+
+        subtitle: {
+            text: 'Source: thesolarfoundation.com'
+        },
+
+        yAxis: {
+            title: {
+                text: 'Number of Employees'
+            }
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle'
+        },
+
+        plotOptions: {
+            series: {
+                pointStart: 2010
+            }
+        },
+
+        series: [{
+            name: 'Installation',
+            data: ArrUp
+        }, {
+            name: 'Manufacturing',
+            data: ArrDown
+        }, {
+            name: 'Sales & Distribution',
+            data: ArrPulse
+        }]
+
+    });
+
+
+    /*]]>*/
+</script>
+
+<form action="/sendMsg" method="post">
+    <p><input type="text" name="text"> firstName</p>
+    <p><input type="submit"></p>
+</form>
+
+<script type="text/javascript" th:src="@{webjars/bootstrap/4.2.1/js/bootstrap.min.js}"></script>
+</body>
+</html>
