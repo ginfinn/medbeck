@@ -37,12 +37,20 @@ public class MainController {
     @Autowired
     RestTemplateGetJson restTemplateGetJson;
 
+
     @PostMapping("/register/patient")
     public Object registerPatient(@RequestBody RegistrationRequest registrationRequest) {
+        List<String> fullName = new ArrayList<>();
+        fullName.add("Артемий Матчин");
+        fullName.add("Дмитрий Ходорковский");
+        fullName.add("Филип Кравич");
+        fullName.add("Александр Гопак");
+        fullName.add("Наталья Медичи");
+            Random random =new Random();
         Patient u = new Patient();
         u.setPassword(registrationRequest.getPassword());
         u.setSnils(registrationRequest.getLogin());
-        u.setFullName("Алексей Достоевский");
+        u.setFullName(fullName.get(random.nextInt(5)));
         if (patientRepository.existsBySnils(registrationRequest.getLogin())) {
             Patient memberEntity = userService.findByLoginAndPasswordPatient(registrationRequest.getLogin(), registrationRequest.getPassword());
             String token = jwtProvider.generateToken(memberEntity.getSnils());
@@ -130,7 +138,7 @@ public class MainController {
     }
 
     @PostMapping("/patient/addTonometer")
-    public void addTonometer(@RequestHeader("Authorization") String token, String model, String serialNumber,String manufacturer ) {
+    public void addTonometer(@RequestHeader("Authorization") String token, String model, String serialNumber, String manufacturer) {
         String patientLogin = decoder(token);
         Tonometer tonometer = new Tonometer();
         List<Tonometer> tonometers = new ArrayList<>();
@@ -189,7 +197,7 @@ public class MainController {
         Random random = new Random();
         val patient = patientRepository.findBySnils(patientLogin);
         val a = restTemplateGetJson.loadInvoices(image);
-        val b =a.split(",");
+        val b = a.split(",");
         pressure.setTop(Integer.parseInt(b[0]));
         pressure.setBottom(Integer.parseInt(b[1]));
         pressure.setPulse(Integer.parseInt(b[2]));
