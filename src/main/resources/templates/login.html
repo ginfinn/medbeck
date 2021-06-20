@@ -1,16 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+  <meta charset="UTF-8">
+  <title>Title</title>
+
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style type="text/css">
+    * {
+      box-sizing: border-box;
+      font-family: 'Montserrat', sans-serif;
+      color: rgba(0, 0, 0, 0.65);
+      font-size: 14px;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      margin: 0;
+      
+      box-sizing: border-box;
+
+      background-color: #F0F2F5;
+    }
+
+    #app {
+      width: 400px;
+      margin: 100px auto;
+      background-color: #ffffff;
+      border-radius: 4px;
+      box-shadow: rgba(0, 0, 0, 0.043) 0px 2px 0px 0px;
+    }
+    
+    #header {
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      justify-content: space-between;
+      height: 56px;
+      width: 100%;
+      background-color: rgb(25, 125, 255);
+      border-radius: 4px 4px 0 0;
+      padding: 0 32px;
+    }
+
+    #title {
+      font-weight: 600;
+      color: #FFF;
+      font-size: 20px;
+    }
+
+    #content {
+      padding: 24px;
+    }
+
+    input {
+      margin-bottom: 24px;
+      border: 1px solid rgb(217, 217, 217);
+      border-radius: 4px;
+      padding: 4px 11px;
+      height: 32px;
+      max-width: 400px;
+      width: 100%;
+      outline: none;
+    }
+
+    input:hover, input:focus {
+      border-color: rgb(24, 144, 255);
+      box-shadow: rgba(24, 144, 255, 0.2) 0px 0px 0px 2px;
+    }
+
+    input[type="button"], button, input[type="submit"] {
+      display: block;
+      background-color: #ffffff;
+      border: 1px solid rgb(24, 144, 255);
+      border-radius: 4px;
+      box-shadow: rgba(0, 0, 0, 0.043) 0px 2px 0px 0px;
+      color: rgb(24, 144, 255);
+      cursor: pointer;
+      height: 32px;
+      padding: 0 15px;
+      width: auto;
+      margin: 0 0 0 auto;
+    }
+  </style>
 </head>
 <body>
+  <div id="app">
+    <div id="header">
+        <div id="title">Красота какая</div>
+    </div>
 
-<form action="/register/Doctor" method="post">
-  <p><input type="text" name="login"> login</p>
-  <p><input type="password" name="password"> password</p>
-  <input type="submit" name="reg" value="Регистрация" />
-</form>
+    <div id="content">
+      <form action="/register/Doctor" method="post">
+        <input type="text" name="login" placeholder="Логин">
+        <input type="password" name="password" placeholder="Пароль">
+        <input type="submit" name="reg" value="Регистрация" />
+      </form>
+    </div>
+  </div>
 
 </body>
 </html>

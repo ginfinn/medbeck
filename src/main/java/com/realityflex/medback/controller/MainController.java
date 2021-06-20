@@ -30,7 +30,6 @@ public class MainController {
     @Autowired
     PressureRepository pressureRepository;
 
-
     //    @Autowired
 //    PhotoService photoService;
     @PostMapping("/register/patient")
@@ -38,6 +37,7 @@ public class MainController {
         Patient u = new Patient();
         u.setPassword(registrationRequest.getPassword());
         u.setSnils(registrationRequest.getLogin());
+        u.setFullName("Алексей Достоевский");
         if (patientRepository.existsBySnils(registrationRequest.getLogin())) {
             Patient memberEntity = userService.findByLoginAndPasswordPatient(registrationRequest.getLogin(), registrationRequest.getPassword());
             String token = jwtProvider.generateToken(memberEntity.getSnils());

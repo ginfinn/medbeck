@@ -3,24 +3,126 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <title>Spring Boot Thymeleaf Hello World Example</title>
+    <title>Статистика</title>
 
     <link rel="stylesheet" th:href="@{webjars/bootstrap/4.2.1/css/bootstrap.min.css}"/>
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
 
-    <script src="moment.js"></script>
-    <script src="moment-timezone-with-data.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.33/moment-timezone-with-data.js"></script>
 
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <style type="text/css">
+        * {
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+            color: rgba(0, 0, 0, 0.65);
+            font-size: 14px;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            
+            box-sizing: border-box;
+
+            background-color: #F0F2F5;
+        }
+
+        #app {
+            height: 100vh;
+            width: 100vw;
+        }
+
+        #header {
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+            justify-content: space-between;
+            height: 56px;
+            width: 100vw;
+            background-color: rgb(25, 125, 255);
+            box-shadow: 0px 1px 4px 1px #0059b5;
+            margin-bottom: 24px;
+            padding: 0 32px;
+        }
+
+        #title {
+            font-weight: 600;
+            color: #FFF;
+            font-size: 20px;
+        }
+
+        #content {
+            display: none;
+
+            height: calc(100% - 96px);
+            margin: 16px 24px;
+            padding: 24px;
+
+            background-color: #ffffff;
+        }
+
+        .h3 {
+            display: contents;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: rgb(0, 0, 0, 0.85);
+        }
+
+        .controls-header {
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .controls-header input {
+            width: 49%;
+        }
+
+        input {
+            border: 1px solid rgb(217, 217, 217);
+            border-radius: 4px;
+            padding: 4px 11px;
+            height: 32px;
+            max-width: 400px;
+            width: 55%;
+            outline: none;
+        }
+
+        input:hover, input:focus {
+            border-color: rgb(24, 144, 255);
+            box-shadow: rgba(24, 144, 255, 0.2) 0px 0px 0px 2px;
+        }
+
+        input[type="button"], button, input[type="submit"] {
+            background-color: #ffffff;
+            border: 1px solid rgb(24, 144, 255);
+            border-radius: 4px;
+            box-shadow: rgba(0, 0, 0, 0.043) 0px 2px 0px 0px;
+            color: rgb(24, 144, 255);
+            cursor: pointer;
+            height: 32px;
+            padding: 0 15px;
+            width: auto;
+        }
+
         #container {
             min-width: 310px;
             max-width: 800px;
             height: 400px;
-            margin: 0 auto
+            margin: 0 auto;
+
+            margin-bottom: 24px;
         }
 
         .container {
@@ -32,98 +134,117 @@
         }
     </style>
 
-    <script>
-        function aler(){
-            var dok = document.getElementById('formMsg')
-            dok.setAttribute('action', "/sendMsg?patientId="+document.location.pathname.split('/')[document.location.pathname.split('/').length-1]+
-                "&doctorName="+document.location.pathname.split('/')[document.location.pathname.split('/').length-2])
+    <script th:inline="javascript">
+        function stopLoading() {
+            document.getElementById('spinner').style.display = 'none'
+            document.getElementById('content').style.display = 'block'
         }
     </script>
-
 </head>
-<body onload="aler()">
+<body onload="stopLoading()">
+    <div id="app">
+        <div id="header">
+            <div id="title">Статистика врача</div>
+        </div>
 
-<div id="container" class="chart_wrap"></div>
-<script th:inline="javascript">
-    /*<![CDATA[*/
+        <div id="spinner" class="lds-ring"><div></div><div></div><div></div><div></div></div>
 
-    let stats = /*[[${stats}]]*/ null;
+        <div id="content">
+            <form action="/sendMsg" method="post">
+                <div class="controls-header">
+                    <div class="h3">Указать период</div>
+                    <input type="submit" value="Применить">
+                </div>
+                <div class="controls-header">
+                    <input type="datetime-local" onClick="xCal(this)" onKeyUp="xCal()"/>
+                    <input type="datetime-local" onClick="xCal(this)" onKeyUp="xCal()"/>
+                </div>
+            </form>
 
-    console.log(JSON.stringify(stats));
+            <div id="container" class="chart_wrap"></div>
+        
+            <form action="/sendMsg" method="post">
+                <div class="controls-header">
+                    <div class="h3">Контакты</div>
+                    <input type="submit">
+                </div>
+                <div class="controls-header">
+                    <input type="text" placeholder="Текст"/>
+                    <input type="text" placeholder="Номер телефона"/>
+                </div>
+            </form>
+        </div>
+    </div>
 
-    let ArrUp = [];
-    let ArrDown = [];
-    let ArrPulse = [];
-    let ArrDate = [];
+    
+    <script th:inline="javascript">
+        /*<![CDATA[*/
 
-    for (index = 0; index < stats.length; ++index) {
-        ArrUp.push(stats[index].top);
-        ArrDown.push(stats[index].bottom)
-        ArrPulse.push(stats[index].pulse)
-        time = new Date(stats[index].id);
-        ArrDate.push(time.getMinutes())
-        console.log(new Date(stats[index].id))
-    }
+        let stats = /*[[${stats}]]*/ null;
 
-    Highcharts.chart('container', {
-        title: {
-            text: 'Solar Employment Growth by Sector, 2010-2016'
-        },
+        let ArrUp = [];
+        let ArrDown = [];
+        let ArrPulse = [];
+        let ArrDate = [];
 
-        subtitle: {
-            text: 'Source: thesolarfoundation.com'
-        },
+        for (index = 0; index < stats.length; ++index) {
+            ArrUp.push(stats[index].top);
+            ArrDown.push(stats[index].bottom)
+            ArrPulse.push(stats[index].pulse)
+            time = new Date(stats[index].id);
+            ArrDate.push(moment(time).format('DD/MM/YYYY'))
+            console.log(new Date(stats[index].id))
 
-        yAxis: {
+            console.log(ArrDate);
+        }
+
+        Highcharts.chart('container', {
             title: {
-                text: 'Number of Employees'
-            }
-        },
-        xAxis: {
-            "categories": ArrDate,
-        },
-        legend: {
-            layout: 'vertical',
-            align: 'right',
-            verticalAlign: 'middle'
-        },
+                text: 'Solar Employment Growth by Sector, 2010-2016'
+            },
 
-        plotOptions: {
-            series: {
+            subtitle: {
+                text: 'Source: thesolarfoundation.com'
+            },
 
-            }
-        },
+            yAxis: {
+                title: {
+                    text: 'Number of Employees'
+                }
+            },
+            xAxis: {
+                "categories": ArrDate,
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle'
+            },
 
-        series: [{
-            name: 'Installation',
-            data: ArrUp
-        }, {
-            name: 'Manufacturing',
-            data: ArrDown
-        }, {
-            name: 'Sales & Distribution',
-            data: ArrPulse
-        },{
+            plotOptions: {
+                series: {
 
-        }]
+                }
+            },
 
-    });
+            series: [{
+                name: 'Installation',
+                data: ArrUp
+            }, {
+                name: 'Manufacturing',
+                data: ArrDown
+            }, {
+                name: 'Sales & Distribution',
+                data: ArrPulse
+            },{
 
-    /*]]>*/
-</script>
+            }]
 
-<form action="/sendMsg" method="post">
-    <input type="text" value="06.10.2017 20:12:45" onClick="xCal(this)" onKeyUp="xCal()">
-    <input type="text" value="06.10.2017 20:12:45" size="19" onClick="xCal(this)" onKeyUp="xCal()">
-    <p><input type="submit"></p>
-</form>
+        });
 
-<form action="/sendMsg?patientId=" id="formMsg" method="post">
-    <p><input type="text" name="text"> text</p>
-    <p><input type="text" name="phone"> phone</p>
-    <p><input type="submit"></p>
-</form>
+        /*]]>*/
+    </script>
 
-<script type="text/javascript" th:src="@{webjars/bootstrap/4.2.1/js/bootstrap.min.js}"></script>
+    <script type="text/javascript" th:src="@{webjars/bootstrap/4.2.1/js/bootstrap.min.js}"></script>
 </body>
 </html>

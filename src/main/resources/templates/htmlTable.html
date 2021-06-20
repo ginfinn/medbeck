@@ -3,13 +3,15 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <title>Spring Boot Thymeleaf Hello World Example</title>
+    <title>Врачи</title>
 
-    <script type="text/javascript" src="script/jquery-2.0.0.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
     <link rel="stylesheet" th:href="@{webjars/bootstrap/4.2.1/css/bootstrap.min.css}"/>
     <link rel="stylesheet" th:href="@{/css/main.css}"/>
-
+<!-- 
     <style type="text/css">
         table {
             width: 100%;
@@ -58,12 +60,96 @@
             border-radius: 0 0 20px 0;
         }
     </style>
-
+ -->
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
 
+    <style></style>
     <style type="text/css">
+        * {
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+            color: rgba(0, 0, 0, 0.65);
+            font-size: 14px;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            
+            box-sizing: border-box;
+
+            background-color: #F0F2F5;
+        }
+
+        #app {
+            height: 100vh;
+            width: 100vw;
+        }
+
+        #header {
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+            justify-content: space-between;
+            height: 56px;
+            width: 100vw;
+            background-color: rgb(25, 125, 255);
+            box-shadow: 0px 1px 4px 1px #0059b5;
+            margin-bottom: 24px;
+            padding: 0 32px;
+        }
+
+        #title {
+            font-weight: 600;
+            color: #FFF;
+            font-size: 20px;
+        }
+
+        #content {
+            display: none;
+
+            height: calc(100% - 96px);
+            margin: 16px 24px;
+            padding: 24px;
+
+            background-color: #ffffff;
+        }
+
+        #controls {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        #search {
+            border: 1px solid rgb(217, 217, 217);
+            border-radius: 4px;
+            padding: 4px 11px;
+            height: 32px;
+            max-width: 400px;
+            width: 55%;
+            outline: none;
+        }
+
+        #search:hover, #search:focus {
+            border-color: rgb(24, 144, 255);
+            box-shadow: rgba(24, 144, 255, 0.2) 0px 0px 0px 2px;
+        }
+
+        .button {
+            background-color: #ffffff;
+            border: 1px solid rgb(24, 144, 255);
+            border-radius: 4px;
+            box-shadow: rgba(0, 0, 0, 0.043) 0px 2px 0px 0px;
+            color: rgb(24, 144, 255);
+            cursor: pointer;
+            height: 32px;
+            padding: 0 15px;
+        }
+
         #container {
             min-width: 310px;
             max-width: 800px;
@@ -111,16 +197,21 @@
                         patients = JSON.parse(xhr.responseText);
                         console.log(patients);
                         tableArr = [];
-                        var myTable = document.getElementById("table");
+                        if (window._p) {
+                            document.getElementById("search").value = '';
+                            document.getElementsByTagName("tbody").item(0).innerHTML = '\n' + window._p;
+                            window._p = undefined;
+                        }
+                        var myTable = document.getElementsByTagName("tbody").item(0);
                         var rowCount = myTable.rows.length;
-                        for (var x = rowCount - 1; x > 0; x--) {
+                        for (var x = rowCount-1; x >= 0; x--) {
                             myTable.deleteRow(x);
                         }
 
                         for (index = 0; index < patients.length; ++index) {
                             tableArr.push('<tr>')
                             tableArr.push('<td>' + patients[index].fullName + '</td>');
-                            tableArr.push('<td>' + patients[index].inn + '</td>');
+                            tableArr.push('<td>' + patients[index].snils + '</td>');
                             tableArr.push('<td>' + patients[index].doctorName + '</td>');
                             tableArr.push('</tr>');
                         }
@@ -147,16 +238,21 @@
                         patients = JSON.parse(xhr.responseText);
                         console.log(patients);
                         tableArr = [];
-                        var myTable = document.getElementById("table");
+                        if (window._p) {
+                            document.getElementById("search").value = '';
+                            document.getElementsByTagName("tbody").item(0).innerHTML = '\n' + window._p;
+                            window._p = undefined;
+                        }
+                        var myTable = document.getElementsByTagName("tbody").item(0);
                         var rowCount = myTable.rows.length;
-                        for (var x = rowCount - 1; x > 0; x--) {
+                        for (var x = rowCount-1; x >= 0; x--) {
                             myTable.deleteRow(x);
                         }
 
                         for (index = 0; index < patients.length; ++index) {
                             tableArr.push('<tr>')
                             tableArr.push('<td>' + patients[index].fullName + '</td>');
-                            tableArr.push('<td>' + patients[index].inn + '</td>');
+                            tableArr.push('<td>' + patients[index].snils + '</td>');
                             tableArr.push('<td>' + patients[index].doctorName + '</td>');
                             tableArr.push('</tr>');
                         }
@@ -188,16 +284,21 @@
                     patients = JSON.parse(xhr.responseText);
                     console.log(patients);
                     tableArr = [];
-                    var myTable = document.getElementById("table");
+                    if (window._p) {
+                        document.getElementById("search").value = '';
+                        document.getElementsByTagName("tbody").item(0).innerHTML = '\n' + window._p;
+                        window._p = undefined;
+                    }
+                    var myTable = document.getElementsByTagName("tbody").item(0);
                     var rowCount = myTable.rows.length;
-                    for (var x = rowCount - 1; x > 0; x--) {
+                    for (var x = rowCount-1; x >= 0; x--) {
                         myTable.deleteRow(x);
                     }
 
                     for (index = 0; index < patients.length; ++index) {
                         tableArr.push('<tr>')
                         tableArr.push('<td>' + patients[index].fullName + '</td>');
-                        tableArr.push('<td>' + patients[index].inn + '</td>');
+                        tableArr.push('<td>' + patients[index].snils + '</td>');
                         tableArr.push('<td>' + patients[index].doctorName + '</td>');
                         tableArr.push('</tr>');
                     }
@@ -221,16 +322,21 @@
                     patients = JSON.parse(xhr.responseText);
                     console.log(patients);
                     tableArr = [];
-                    var myTable = document.getElementById("table");
+                    if (window._p) {
+                        document.getElementById("search").value = '';
+                        document.getElementsByTagName("tbody").item(0).innerHTML = '\n' + window._p;
+                        window._p = undefined;
+                    }
+                    var myTable = document.getElementsByTagName("tbody").item(0);
                     var rowCount = myTable.rows.length;
-                    for (var x = rowCount - 1; x > 0; x--) {
+                    for (var x = rowCount-1; x >= 0; x--) {
                         myTable.deleteRow(x);
                     }
 
                     for (index = 0; index < patients.length; ++index) {
                         tableArr.push('<tr>')
                         tableArr.push('<td>' + patients[index].fullName + '</td>');
-                        tableArr.push('<td>' + patients[index].inn + '</td>');
+                        tableArr.push('<td>' + patients[index].snils + '</td>');
                         tableArr.push('<td>' + patients[index].doctorName + '</td>');
                         tableArr.push('</tr>');
                     }
@@ -252,42 +358,148 @@
                 window.sessionStorage.authToken = token;
             }
             console.log(window.sessionStorage.authToken)
+            
+            document.getElementById('spinner').style.display = 'none'
+            document.getElementById('content').style.display = 'block'
         }
         /*]]>*/
     </script>
 
+    <!-- Spinner -->
+    <style type="text/css">
+        .lds-ring {
+          display: block;
+          position: relative;
+          width: 150px;
+          height: 150px;
+          margin: 60px auto;
+        }
+        .lds-ring div {
+          box-sizing: border-box;
+          display: block;
+          position: absolute;
+          width: 134px;
+          height: 134px;
+          margin: 8px;
+          border: 8px solid rgb(59, 121, 255);
+          border-radius: 50%;
+          animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+          border-color: rgb(59, 121, 255) transparent transparent transparent;
+        }
+        .lds-ring div:nth-child(1) {
+          animation-delay: -0.45s;
+        }
+        .lds-ring div:nth-child(2) {
+          animation-delay: -0.3s;
+        }
+        .lds-ring div:nth-child(3) {
+          animation-delay: -0.15s;
+        }
+        @keyframes lds-ring {
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
+        }
+    </style>
+
+    <!-- Table -->
+    <style type="text/css">
+        #table, table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table thead {
+            text-align: left;
+        }
+
+        table thead th {
+            padding: 16px;
+            font-weight: 600;
+            border-color: rgb(250, 250, 250);
+            border-bottom: 1px solid rgb(232, 232, 232);
+            background-color: rgb(250, 250, 250);
+            border-collapse: collapse;
+            color: rgba(0, 0, 0, 0.85);
+        }
+
+        table td {
+            padding: 16px;
+            border-color: #ffffff;
+            border-bottom: 1px solid rgb(232, 232, 232);
+            border-collapse: collapse;
+            cursor: pointer;
+        }
+
+        table tbody tr:hover {
+            background-color: rgb(230, 247, 255);
+        }
+    </style>
+
 </head>
 <body onload="aler()">
+    <div id="app">
+        <div id="header">
+            <div id="title">Врачи</div>
+        </div>
 
-<p id="stat">Test Table</p>
+        <div id="spinner" class="lds-ring"><div></div><div></div><div></div><div></div></div>
 
-<script th:inline="javascript">
-    /*<![CDATA[*/
+        <div id="content">
+            <div id="controls">
+                <input type="text" id="search" placeholder="Поиск" />
+                <input class="button" type="button" value="Проверить" onclick="isEmail()">
+            </div>
+            <div id="table"></div>
+        </div>
+    </div>
 
-    let patients = /*[[${patients}]]*/ null;
-    var tableArr=['<table id="table" @click:row="onClickRow">'];
+    <script th:inline="javascript">
+        /*<![CDATA[*/
 
-    tableArr.push('<tr>')
-    tableArr.push('<td>'+"ФИО"+'</td>');
-    tableArr.push('<td>'+"СНИЛС"+'</td>');
-    tableArr.push('<td>'+"Имя врача"+'</td>');
-    tableArr.push('</tr>');
+        let patients = /*[[${patients}]]*/ null;
+        var tableArr=['<table id="table" @click:row="onClickRow">'];
 
-    for (index = 0; index < patients.length; ++index) {
-        tableArr.push('<tr>')
-        tableArr.push('<td>'+patients[index].fullName+'</td>');
-        tableArr.push('<td>'+patients[index].inn+'</td>');
-        tableArr.push('<td>'+patients[index].doctorName+'</td>');
-        tableArr.push('</tr>');
-    }
-    tableArr.push('</table>');
+        tableArr.push('<thead><tr>')
+        tableArr.push('<th>'+"ФИО"+'</th>');
+        tableArr.push('<th>'+"СНИЛС"+'</th>');
+        tableArr.push('<th>'+"Имя врача"+'</th>');
+        tableArr.push('</tr></thead><tbody>');
 
-    document.getElementById('stat').innerHTML=tableArr.join('\n')
-    /*]]>*/
-</script>
+        for (index = 0; index < patients.length; ++index) {
+            tableArr.push('<tr>')
+            tableArr.push('<td>'+patients[index].fullName+'</td>');
+            tableArr.push('<td>'+patients[index].snils+'</td>');
+            tableArr.push('<td>'+patients[index].doctorName+'</td>');
+            tableArr.push('</tr>');
+        }
+        tableArr.push('</tbody></table>');
 
-<p><input type="button" value="Проверить" onclick="isEmail()"></p>
+        document.getElementById('table').innerHTML=tableArr.join('\n')
+        /*]]>*/
+    </script>
 
-<script type="text/javascript" th:src="@{webjars/bootstrap/4.2.1/js/bootstrap.min.js}"></script>
+    <script th:inline="javascript">
+        document.getElementById('search').addEventListener('input', (e) => {
+            if (!window._p) {
+                window._p = document.getElementsByTagName('tbody').item(0).innerHTML.slice(1, -1) + '\n';
+            }
+
+            const res = []
+
+            window._p.split('</tr>\n').forEach(E => {
+                if (E.indexOf(e.target.value) > -1) {
+                    res.push(E);
+                }
+            });
+
+            document.getElementsByTagName('tbody').item(0).innerHTML = '\n' + res.join('</tr>\n') + '</tr>\n'
+        })
+    </script>
+
+    <script type="text/javascript" th:src="@{webjars/bootstrap/4.2.1/js/bootstrap.min.js}"></script>
 </body>
 </html>
