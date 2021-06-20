@@ -18,7 +18,7 @@ import java.io.IOException;
 public class RestTemplateGetJson {
     private final RestTemplate restTemplate;
 
-    public String loadInvoices(MultipartFile invoices, Integer value) throws IOException {
+    public String loadInvoices(MultipartFile invoices) throws IOException {
 
         Resource invoicesResource = invoices.getResource();
 
@@ -30,6 +30,6 @@ public class RestTemplateGetJson {
 
         HttpEntity<LinkedMultiValueMap<String, Object>> httpEntity = new HttpEntity<>(parts, httpHeaders);
 
-      return  restTemplate.postForEntity("http://127.0.0.1:5000/classify?pass="+value, httpEntity, String.class).getBody();
+      return  restTemplate.postForEntity("http://127.0.0.1:5000/classify?pass=", httpEntity,  String.class).getBody();
     }
 }

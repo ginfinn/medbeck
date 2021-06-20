@@ -183,16 +183,18 @@ public class MainController {
         Pressure pressure = new Pressure();
         Random random = new Random();
         val patient = patientRepository.findBySnils(patientLogin);
-        val a = restTemplateGetJson.loadInvoices(image, 234);
-        // patient.getPressures().add();
-        // Random random = new Random();
-
-        //  pressure.setTop();
+        val a = restTemplateGetJson.loadInvoices(image);
+        val b =a.split(",");
+        pressure.setTop(Integer.parseInt(b[0]));
+        pressure.setBottom(Integer.parseInt(b[1]));
+        pressure.setPulse(Integer.parseInt(b[2]));
+        patient.getPressures().add(pressure);
+        patientRepository.save(patient);
         PressureDto pressureDto = new PressureDto();
-        pressureDto.setBottom(137 - random.nextInt(20));
-        pressureDto.setPulse(87 - random.nextInt(20));
-        pressureDto.setTop(150 - random.nextInt(15));
-        val imagee = image;
+        pressureDto.setBottom(Integer.parseInt(b[0]));
+        pressureDto.setPulse(Integer.parseInt(b[1]));
+        pressureDto.setTop(Integer.parseInt(b[2]));
+
         return pressureDto;
     }
 
