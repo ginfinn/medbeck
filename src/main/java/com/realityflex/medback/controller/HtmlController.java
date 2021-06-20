@@ -108,7 +108,7 @@ public class HtmlController {
         doctorMessage.setText(text);
         doctorMessage.setPhone(phone);
         doctorMessage.setDoctorName(doctorName);
-        val patient = patientRepository.findByInn(patientId);
+        val patient = patientRepository.findBySnils(patientId);
         patient.getDoctorMessages().add(doctorMessage);
         patientRepository.save(patient);
     }

@@ -2,14 +2,17 @@ package com.realityflex.medback.controller;
 
 import com.realityflex.medback.config.jwt.JwtProvider;
 import com.realityflex.medback.config.jwt.UserService;
+import com.realityflex.medback.dto.PressureDto;
 import com.realityflex.medback.entity.*;
 import com.realityflex.medback.repository.*;
-//import com.realityflex.medback.service.PhotoService;
+import com.realityflex.medback.service.RestTemplateGetJson;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import javax.servlet.http.Cookie;
 import java.io.IOException;
 import java.util.*;
@@ -31,8 +34,9 @@ public class MainController {
     PressureRepository pressureRepository;
 
 
-    //    @Autowired
-//    PhotoService photoService;
+    @Autowired
+    RestTemplateGetJson restTemplateGetJson;
+
     @PostMapping("/register/patient")
     public Object registerPatient(@RequestBody RegistrationRequest registrationRequest) {
         Patient u = new Patient();
@@ -41,7 +45,7 @@ public class MainController {
         if (patientRepository.existsBySnils(registrationRequest.getLogin())) {
             Patient memberEntity = userService.findByLoginAndPasswordPatient(registrationRequest.getLogin(), registrationRequest.getPassword());
             String token = jwtProvider.generateToken(memberEntity.getSnils());
-            if ( token != null) {
+            if (token != null) {
                 return new AuthResponse(token);
             } else {
                 return "такой пользователь уже существует";
@@ -102,6 +106,14 @@ public class MainController {
         return pressureRepository.findAllByFakePatientId(patient.getId());
     }
 
+    @GetMapping("patient/addActivityType")
+    public void addActivityType(@RequestHeader("Authorization") String token, String activityType) {
+        String patientLogin = decoder(token);
+        val pressure = pressureRepository.findFirstByOrderByIdDesc();
+        pressure.setActivityType(activityType);
+        pressureRepository.save(pressure);
+    }
+
     @GetMapping("/patient/addPressure")
     public void addPressure(@RequestHeader("Authorization") String token, Integer top, Integer bottom, Integer pulse) {
         String patientLogin = decoder(token);
@@ -112,6 +124,7 @@ public class MainController {
         val patient = patientRepository.findBySnils(patientLogin);
         patient.getPressures().add(pressure);
         patientRepository.save(patient);
+
 
     }
 
@@ -148,38 +161,40 @@ public class MainController {
 
 
     @GetMapping("/addDoctorForPatient")
-    public void addDoctorForPatient(String patientId,String doctorName){
-        System.out.println("2222222 "+patientId+" "+doctorName);
+    public void addDoctorForPatient(String patientId, String doctorName) {
+        System.out.println("2222222 " + patientId + " " + doctorName);
         val patient = patientRepository.findBySnils(patientId);
         patient.setDoctorName(doctorName);
         patientRepository.save(patient);
     }
 
     @GetMapping("/deleteDoctorForPatient")
-    public  void deleteDoctorForPatient(String patientId){
+    public void deleteDoctorForPatient(String patientId) {
         val patient = patientRepository.findBySnils(patientId);
-        System.out.println("3333333333 "+patientId);
+        System.out.println("3333333333 " + patientId);
         patient.setDoctorName(null);
         patientRepository.save(patient);
     }
 
 
-//    @PostMapping("/getPhoto")
-//    public PressureDto addPhoto(@RequestHeader("Authorization") String token,@RequestBody MultipartFile image) throws IOException {
-//        String patientLogin = decoder(token);
-//        Pressure pressure =new Pressure();
-//        val patient = patientRepository.findByLogin(patientLogin);
-//        patient.getPressures().add();
-//        Random random = new Random();
-//        Pressure pressure = new Pressure();
-//        pressure.setTop();
-//        PressureDto pressureDto = new PressureDto();
-//        pressureDto.setBottom(137 -  random.nextInt(20));
-//        pressureDto.setPulse(87                                                                           -  random.nextInt(20));
-//        pressureDto.setTop(150 -  random.nextInt(15));
-//        val imagee = image;
-//        return pressureDto;
-//    }
+    @PostMapping("/patient/getPhoto")
+    public PressureDto addPhoto(@RequestHeader("Authorization") String token, @RequestParam("image") MultipartFile image) throws IOException {
+        String patientLogin = decoder(token);
+        Pressure pressure = new Pressure();
+        Random random = new Random();
+        val patient = patientRepository.findBySnils(patientLogin);
+        val a = restTemplateGetJson.loadInvoices(image, 234);
+        // patient.getPressures().add();
+        // Random random = new Random();
+
+        //  pressure.setTop();
+        PressureDto pressureDto = new PressureDto();
+        pressureDto.setBottom(137 - random.nextInt(20));
+        pressureDto.setPulse(87 - random.nextInt(20));
+        pressureDto.setTop(150 - random.nextInt(15));
+        val imagee = image;
+        return pressureDto;
+    }
 
 
     /* @GetMapping("/photos/")
