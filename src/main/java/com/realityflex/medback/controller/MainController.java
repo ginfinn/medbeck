@@ -30,6 +30,7 @@ public class MainController {
     @Autowired
     PressureRepository pressureRepository;
 
+
     //    @Autowired
 //    PhotoService photoService;
     @PostMapping("/register/patient")
