@@ -87,8 +87,8 @@ public class HtmlController {
         return "htmlTable";
     }
 
-    @GetMapping("/doctor/showStats/{name}")
-    public String displayStats(@PathVariable(value="name") String name, Model model) {
+    @GetMapping("/doctor/showStats/{doctor}/{name}")
+    public String displayStats(@PathVariable(value="doctor") String doctor, @PathVariable(value="name") String name, Model model) {
         val patient = patientRepository.findBySnils(patientRepository.findBySnils(name).getSnils());
         model.addAttribute("stats", pressureRepository.findAllByFakePatientId(patient.getId()));
         return "create-project";
@@ -103,12 +103,12 @@ public class HtmlController {
     @RequestMapping(value = "/sendMsg", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE,
             produces = {MediaType.APPLICATION_ATOM_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public @ResponseBody
-    void doctorModel(String text, Integer patientId, String phone, String doctorName) {
+    void doctorModel(String text, String patientId, String phone, String doctorName) {
         DoctorMessage doctorMessage = new DoctorMessage();
         doctorMessage.setText(text);
         doctorMessage.setPhone(phone);
         doctorMessage.setDoctorName(doctorName);
-        val patient = patientRepository.findById(patientId).get();
+        val patient = patientRepository.findByInn(patientId);
         patient.getDoctorMessages().add(doctorMessage);
         patientRepository.save(patient);
     }

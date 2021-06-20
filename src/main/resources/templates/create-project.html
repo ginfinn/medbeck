@@ -31,8 +31,17 @@
             text-align:center;
         }
     </style>
+
+    <script>
+        function aler(){
+            var dok = document.getElementById('formMsg')
+            dok.setAttribute('action', "/sendMsg?patientId="+document.location.pathname.split('/')[document.location.pathname.split('/').length-1]+
+                "&doctorName="+document.location.pathname.split('/')[document.location.pathname.split('/').length-2])
+        }
+    </script>
+
 </head>
-<body>
+<body onload="aler()">
 
 <div id="container" class="chart_wrap"></div>
 <script th:inline="javascript">
@@ -109,8 +118,9 @@
     <p><input type="submit"></p>
 </form>
 
-<form action="/sendMsg" method="post">
-    <p><input type="text" name="text"> firstName</p>
+<form action="/sendMsg?patientId=" id="formMsg" method="post">
+    <p><input type="text" name="text"> text</p>
+    <p><input type="text" name="phone"> phone</p>
     <p><input type="submit"></p>
 </form>
 

@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -36,7 +38,13 @@ public class MainController {
         u.setPassword(registrationRequest.getPassword());
         u.setSnils(registrationRequest.getLogin());
         if (patientRepository.existsBySnils(registrationRequest.getLogin())) {
-            return "такой пользователь уже существует";
+            Patient memberEntity = userService.findByLoginAndPasswordPatient(registrationRequest.getLogin(), registrationRequest.getPassword());
+            String token = jwtProvider.generateToken(memberEntity.getSnils());
+            if ( token != null) {
+                return new AuthResponse(token);
+            } else {
+                return "такой пользователь уже существует";
+            }
         } else {
 
             userService.savePatient(u);
