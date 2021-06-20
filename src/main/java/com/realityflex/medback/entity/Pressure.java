@@ -15,7 +15,7 @@ import java.util.Date;
 @Entity
 public class Pressure {
     @Id
-    private final Date id = new Date();
+    final Date id = new Date();
     int top;
     int bottom;
     int pulse;

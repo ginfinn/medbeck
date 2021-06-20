@@ -138,8 +138,13 @@
         function stopLoading() {
             document.getElementById('spinner').style.display = 'none'
             document.getElementById('content').style.display = 'block'
+
+            var dok = document.getElementById('formMsg')
+            dok.setAttribute('action', "/sendMsg?patientId="+document.location.pathname.split('/')[document.location.pathname.split('/').length-1]+
+                "&doctorName="+document.location.pathname.split('/')[document.location.pathname.split('/').length-2])
         }
     </script>
+
 </head>
 <body onload="stopLoading()">
     <div id="app">
@@ -150,27 +155,27 @@
         <div id="spinner" class="lds-ring"><div></div><div></div><div></div><div></div></div>
 
         <div id="content">
-            <form action="/sendMsg" method="post">
+            <form action="/doctor/showStats/" method="post">
                 <div class="controls-header">
                     <div class="h3">Указать период</div>
                     <input type="submit" value="Применить">
                 </div>
                 <div class="controls-header">
-                    <input type="datetime-local" onClick="xCal(this)" onKeyUp="xCal()"/>
+                        <input type="datetime-local" onClick="xCal(this)" onKeyUp="xCal()"/>
                     <input type="datetime-local" onClick="xCal(this)" onKeyUp="xCal()"/>
                 </div>
             </form>
 
             <div id="container" class="chart_wrap"></div>
-        
-            <form action="/sendMsg" method="post">
+
+            <form action="/sendMsg?patientId=" id="formMsg" method="post">
                 <div class="controls-header">
                     <div class="h3">Контакты</div>
                     <input type="submit">
                 </div>
                 <div class="controls-header">
-                    <input type="text" placeholder="Текст"/>
-                    <input type="text" placeholder="Номер телефона"/>
+                    <input type="text" name="text" placeholder="Текст"/>
+                    <input type="text" name="phone" placeholder="Номер телефона"/>
                 </div>
             </form>
         </div>
@@ -180,40 +185,52 @@
     <script th:inline="javascript">
         /*<![CDATA[*/
 
-        let stats = /*[[${stats}]]*/ null;
+        let ArrUp = /*[[${ArrUp}]]*/ null;
+        let ArrDown = /*[[${ArrDown}]]*/ null;
+        let ArrPulse = /*[[${ArrPulse}]]*/ null;
+        let ArrDate = /*[[${Date}]]*/ null;
+        let ArrActivity = /*[[${Activity}]]*/ null;
+        let tonometer = /*[[${DateUpdateTonometers}]]*/ null;
+        let ArrTonom = tonometer[0];
+        let ArrDateNew = []
 
-        let ArrUp = [];
-        let ArrDown = [];
-        let ArrPulse = [];
-        let ArrDate = [];
+        console.log(ArrUp);
+        console.log(ArrDown);
+        console.log(ArrPulse);
+        console.log(ArrDate);
+        console.log(ArrTonom);
 
-        for (index = 0; index < stats.length; ++index) {
-            ArrUp.push(stats[index].top);
-            ArrDown.push(stats[index].bottom)
-            ArrPulse.push(stats[index].pulse)
-            time = new Date(stats[index].id);
-            ArrDate.push(moment(time).format('DD/MM/YYYY'))
-            console.log(new Date(stats[index].id))
+        if (ArrTonom != undefined){
+            ArrTonom = moment(ArrTonom).format('HH:mm DD/MM')
+        }
+        else{
+            ArrTonom = "не менялся"
+        }
+        console.log("WWWWW "+ArrTonom);
+
+        for (index = 0; index < ArrDate.length; ++index) {
+            time = new Date(ArrDate[index]);
+            ArrDateNew.push(ArrActivity[index]+" "+moment(time).format('HH:mm DD/MM'))
 
             console.log(ArrDate);
         }
 
         Highcharts.chart('container', {
             title: {
-                text: 'Solar Employment Growth by Sector, 2010-2016'
+                text: ''
             },
 
-            subtitle: {
-                text: 'Source: thesolarfoundation.com'
-            },
-
+            // subtitle: {
+            //     //text: 'Source: thesolarfoundation.com'
+            // },
+            //
             yAxis: {
                 title: {
-                    text: 'Number of Employees'
+                    text: ''
                 }
             },
             xAxis: {
-                "categories": ArrDate,
+                "categories": ArrDateNew,
             },
             legend: {
                 layout: 'vertical',
@@ -228,16 +245,16 @@
             },
 
             series: [{
-                name: 'Installation',
+                name: 'Верхнее давление',
                 data: ArrUp
             }, {
-                name: 'Manufacturing',
+                name: 'Нижнее давление',
                 data: ArrDown
             }, {
-                name: 'Sales & Distribution',
+                name: 'Пульс',
                 data: ArrPulse
             },{
-
+                name: 'Смена тонометра: '+ArrTonom,
             }]
 
         });

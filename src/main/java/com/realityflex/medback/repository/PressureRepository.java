@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface PressureRepository extends JpaRepository<Pressure, Integer> {
     public List<Pressure> findAllByIdBetweenAndFakePatientId(Date from, Date to,int patientId);
+
     public List<Pressure> findAllByFakePatientId(int id);
     Pressure findFirstByOrderByIdDesc();
 }
