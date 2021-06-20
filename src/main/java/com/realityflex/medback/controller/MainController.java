@@ -129,17 +129,21 @@ public class MainController {
     }
 
     @PostMapping("/patient/addTonometer")
-    public void addTonometer(@RequestHeader("Authorization") String token, String model, String serialNumber) {
+    public void addTonometer(@RequestHeader("Authorization") String token, String model, String serialNumber,String manufacturer ) {
         String patientLogin = decoder(token);
         Tonometer tonometer = new Tonometer();
+        List<Tonometer> tonometers = new ArrayList<>();
         tonometer.setModel(model);
         tonometer.setSerialNumber(serialNumber);
+        tonometer.setManufacturer(manufacturer);
+        tonometers.add(tonometer);
         val patient = patientRepository.findBySnils(patientLogin);
-        patient.getTonometer().add(tonometer);
+        patient.setTonometer(tonometers);
 
         patientRepository.save(patient);
 
     }
+
 
     @GetMapping("/getTable/{name}")
     public List<Patient> getTable(@PathVariable(value = "name") String name) {
