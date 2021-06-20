@@ -1,23 +1,35 @@
 package com.realityflex.medback.service;
 
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RequiredArgsConstructor
 @Service
 public class RestTemplateGetJson {
     private final RestTemplate restTemplate;
 
-//    public Poster getJson(String page) {
-//        ResponseEntity<Poster> response = restTemplate.exchange("https://www.mos.ru/api/newsfeed/v4/frontend/json/ru/afisha?expand=spots,spheres,themes,auditories,foundation,districts&page=" + page,
-//                HttpMethod.GET,
-//                null,
-//                new ParameterizedTypeReference<Poster>() {
-//                });
-//        return response.getBody();
-//    }
+    public String loadInvoices(MultipartFile invoices) throws IOException {
+
+        Resource invoicesResource = invoices.getResource();
+
+        LinkedMultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
+        parts.add("file", invoicesResource);
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        HttpEntity<LinkedMultiValueMap<String, Object>> httpEntity = new HttpEntity<>(parts, httpHeaders);
+
+      return  restTemplate.postForEntity("http://127.0.0.1:5000/classify?pass=", httpEntity,  String.class).getBody();
+    }
 }

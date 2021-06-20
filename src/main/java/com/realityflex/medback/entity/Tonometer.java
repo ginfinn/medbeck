@@ -14,6 +14,7 @@ import java.util.Date;
 public class Tonometer {
     @Id
     Date dateUpdate = new Date();
+    String manufacturer ;
     String model;
     String serialNumber;
     @Column(name = "patient_id")

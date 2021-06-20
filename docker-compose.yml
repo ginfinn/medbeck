@@ -1,0 +1,28 @@
+version: "3.8"
+services:
+
+  dsa:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: medBack
+    depends_on:
+      - db123
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db123:5432/compose-postgres
+      - SPRING_DATASOURCE_USERNAME=compose-postgres
+      - SPRING_DATASOURCE_PASSWORD=compose-postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    ports:
+      - 8083:8081
+
+
+
+  db123:
+    image: 'postgres:13.1-alpine'
+    container_name: db123
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_USER=compose-postgres
+      - POSTGRES_PASSWORD=compose-postgres
